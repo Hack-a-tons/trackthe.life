@@ -44,20 +44,31 @@ curl -X POST "http://localhost:4000/api/media" \
 #### Behavior
 1. Validate inputs.
 2. Save temporary file locally or buffer in memory.
-3. Send to **ApertureDB**:
+3. Extract client IP address from request headers.
+4. Lookup IP geolocation using ip-api.com (if not local IP).
+5. Send to **ApertureDB**:
    - Create `Video` or `Image` object with metadata.
    - Trigger recognition workflow (faces, objects, scenes).
-4. Save returned labels and metadata into local MongoDB/SQLite mirror.
-5. Push summary (“user X saw Y at Z”) into **MemMachine**.
-6. Log the run to **Comet/Opik** with project name `trackthe.life`.
+6. Save returned labels and metadata into local MongoDB/SQLite mirror.
+7. Push summary ("user X saw Y at Z") into **MemMachine** with location info.
+8. Log the run to **Comet/Opik** with project name `trackthe.life`.
 
 #### Response
 ```json
 {
   "status": "ok",
   "media_id": "abc123",
-  "labels": ["person", "street", "car"]
+  "labels": ["person", "street", "car"],
+  "location": "37.4421,-122.1619",
+  "ipLocation": {
+    "city": "Montreal",
+    "region": "Quebec",
+    "country": "Canada"
+  }
 }
+```
+
+**Note**: If GPS location is not provided, the system uses IP geolocation as fallback. Both GPS and IP location data are stored for analytics.
 ```
 
 ---

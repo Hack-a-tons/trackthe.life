@@ -26,6 +26,8 @@ The goal:
 
 **Backend (Node.js)**
 - Receives media over HTTP (multipart/form-data or simple POST of image/frame).
+- Extracts client IP and performs geolocation lookup (ip-api.com) as fallback when GPS unavailable.
+
 - Stores raw media and metadata into **ApertureDB** (images, video segments, embeddings, tags). 
 - Sends audio files/URLs to **Telnyx** for transcription, stores text + timestamps. 
 - Calls **MemMachine** API to persist episodic/profile memories — e.g. “user was at Cafe Venetia 2025‑11‑04 15:10, met person X”. 
