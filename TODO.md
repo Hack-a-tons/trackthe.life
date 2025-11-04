@@ -23,12 +23,12 @@ This plan follows the order you specified.
 ---
 
 ## 2. Upload to ApertureDB / recognize and describe
-- [ ] Start ApertureDB locally (see vendor docs). fileciteturn0file2
-- [ ] In Node.js, build `/api/media` endpoint that takes `multipart/form-data` with `file`, `user_id`, `timestamp`, `location?`
-- [ ] On upload: call ApertureDB REST/gRPC to create an Image/Video object + store attributes
-- [ ] Trigger ApertureDB workflow to run detection/description (faces, objects) — store returned labels in same record. fileciteturn0file2
-- [ ] Write `scripts/upload_frame.sh` that POSTs an image from `captures/` to the endpoint
-- [ ] Log the whole pipeline to Comet/Opik (one trace per upload). fileciteturn0file1
+- [x] Start ApertureDB locally (see vendor docs). fileciteturn0file2
+- [x] In Node.js, build `/api/media` endpoint that takes `multipart/form-data` with `file`, `user_id`, `timestamp`, `location?`
+- [x] On upload: call ApertureDB REST/gRPC to create an Image/Video object + store attributes
+- [x] Trigger ApertureDB workflow to run detection/description (faces, objects) — store returned labels in same record. fileciteturn0file2
+- [x] Write `scripts/upload_frame.sh` that POSTs an image from `captures/` to the endpoint
+- [x] Log the whole pipeline to Comet/Opik (one trace per upload). fileciteturn0file1
 
 ---
 
