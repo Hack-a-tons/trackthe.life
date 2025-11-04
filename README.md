@@ -49,8 +49,8 @@ The goal:
 
 - **ESP32 / Freenove kit** — base firmware from “Camera Web Server” and “Video Web Server” chapters. We only need to tweak Wi‑Fi credentials and upload interval. fileciteturn0file0
 - **Node.js backend** — `express` + a tiny ApertureDB client + Telnyx upload + MemMachine client.
-- **ApertureDB** — stores video, images, metadata, and can run recognition workflows. https://docs.aperturedata.io fileciteturn0file2
-- **MemMachine** — universal memory layer; we call it from Node.js to save per‑user context. https://github.com/MemMachine/MemMachine fileciteturn0file4
+- **ApertureDB** — stores video, images, metadata, and can run recognition workflows. Cloud: https://aperturedata.io or self-hosted. fileciteturn0file2
+- **MemMachine** — universal memory layer; we call it from Node.js to save per‑user context. Cloud: https://memmachine.ai or self-hosted. fileciteturn0file4
 - **Telnyx** — uses OpenAI‑compatible `/v2/ai/audio/transcriptions` to turn audio into text + timestamps. fileciteturn0file3
 - **Comet / Opik** — to log LLM and pipeline runs, and to evaluate ranking of “interesting” events. fileciteturn0file1
 

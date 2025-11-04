@@ -1,0 +1,39 @@
+version: '3.8'
+
+# Optional: Local development services
+# Use this if you want to run ApertureDB/MemMachine locally instead of cloud
+
+services:
+  # ApertureDB - multimodal database
+  aperturedb:
+    image: aperturedata/aperturedb:latest
+    container_name: trackthelife-aperturedb
+    ports:
+      - "5555:5555"
+    environment:
+      - APERTUREDB_API_KEY=dev_key
+    volumes:
+      - aperturedb_data:/data
+    networks:
+      - trackthelife
+
+  # MemMachine - memory layer
+  memmachine:
+    image: ghcr.io/memmachine/memmachine:latest
+    container_name: trackthelife-memmachine
+    ports:
+      - "7860:7860"
+    environment:
+      - MEMMACHINE_API_KEY=dev_key
+    volumes:
+      - memmachine_data:/data
+    networks:
+      - trackthelife
+
+volumes:
+  aperturedb_data:
+  memmachine_data:
+
+networks:
+  trackthelife:
+    name: trackthelife-network
