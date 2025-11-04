@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile
     container_name: trackthelife-memmachine
     restart: unless-stopped
+    command: sh /memmachine-start.sh
     ports:
       - "${MEMMACHINE_PORT:-7000}:8080"
     environment:
@@ -36,7 +37,7 @@ services:
       - memmachine-postgres
       - memmachine-neo4j
     volumes:
-      - ./cfg.yml:/app/cfg.yml:ro
+      - ./memmachine-start.sh:/memmachine-start.sh:ro
     networks:
       - trackthelife
 
