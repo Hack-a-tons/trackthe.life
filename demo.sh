@@ -11,8 +11,8 @@ NC='\033[0m' # No Color
 
 # Auto-detect environment
 if command -v docker &> /dev/null; then
-  # Running on server - use localhost
-  DEFAULT_BACKEND_URL="http://localhost:4000"
+  # Running on server - use external port
+  DEFAULT_BACKEND_URL="http://localhost:6000"
 else
   # Running on dev machine - use production URL
   DEFAULT_BACKEND_URL="https://trackthelife.hurated.com"
