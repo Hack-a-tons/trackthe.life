@@ -113,7 +113,7 @@ print_error() {
 
 print_verbose() {
   if [ "$VERBOSE" = true ]; then
-    echo -e "${GRAY}$1${NC}"
+    echo -e "${GRAY}$1${NC}" >&2
   fi
 }
 
