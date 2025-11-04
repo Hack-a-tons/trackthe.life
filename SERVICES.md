@@ -63,16 +63,33 @@ MemMachine runs as part of the trackthe.life Docker Compose setup with PostgreSQ
 - Cross-session memory
 
 **Setup**:
-1. Get OpenAI API key from https://platform.openai.com/api-keys
+1. Get API key (choose one):
+   - **OpenAI**: https://platform.openai.com/api-keys
+   - **Azure OpenAI**: https://portal.azure.com (recommended for enterprise)
 2. Update `.env`:
+   
+   **Option A: OpenAI**
    ```bash
    OPENAI_API_KEY=sk-your_key_here
+   ```
+   
+   **Option B: Azure OpenAI** (recommended)
+   ```bash
+   AZURE_OPENAI_API_KEY=your_azure_key
+   AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+   AZURE_OPENAI_DEPLOYMENT=gpt-4
+   AZURE_OPENAI_API_VERSION=2024-02-15-preview
+   ```
+
+3. Set other MemMachine variables:
+   ```bash
    MEMMACHINE_PORT=7000
    MEMMACHINE_URL=http://localhost:7000
    MEMMACHINE_DB_PASSWORD=secure_password
    MEMMACHINE_NEO4J_PASSWORD=secure_password
    ```
-3. Start services:
+
+4. Start services:
    ```bash
    docker compose up -d
    ```
@@ -84,7 +101,7 @@ MemMachine runs as part of the trackthe.life Docker Compose setup with PostgreSQ
 
 **API Endpoint**: `http://localhost:7000/v1/memories`
 
-**Note**: MemMachine requires OpenAI API key for embeddings and language models. Tokens are consumed during usage.
+**Note**: MemMachine requires OpenAI or Azure OpenAI API key for embeddings and language models. Tokens are consumed during usage. Azure OpenAI is recommended for enterprise deployments with better compliance and regional availability.
 
 ---
 
@@ -166,7 +183,15 @@ MEMMACHINE_PORT=7000
 MEMMACHINE_URL=http://localhost:7000
 MEMMACHINE_DB_PASSWORD=secure_password
 MEMMACHINE_NEO4J_PASSWORD=secure_password
+
+# Option 1: OpenAI
 OPENAI_API_KEY=sk-your_key
+
+# Option 2: Azure OpenAI (recommended)
+AZURE_OPENAI_API_KEY=your_azure_key
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+AZURE_OPENAI_DEPLOYMENT=gpt-4
+AZURE_OPENAI_API_VERSION=2024-02-15-preview
 
 # Comet (cloud)
 COMET_API_KEY=your_key

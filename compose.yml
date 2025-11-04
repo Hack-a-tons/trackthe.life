@@ -9,7 +9,14 @@ services:
     ports:
       - "${MEMMACHINE_PORT:-7000}:8080"
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # OpenAI (if using standard OpenAI)
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      # Azure OpenAI (if using Azure)
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-}
+      - AZURE_OPENAI_DEPLOYMENT=${AZURE_OPENAI_DEPLOYMENT:-}
+      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION:-2024-02-15-preview}
+      # Database configuration
       - POSTGRES_HOST=memmachine-postgres
       - POSTGRES_PORT=5432
       - POSTGRES_USER=memmachine
