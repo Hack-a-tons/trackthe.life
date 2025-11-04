@@ -6,8 +6,34 @@ cd "$(dirname "$0")"
 
 SERVER="trackthelife.hurated.com"
 REPO_DIR="trackthe.life"
+COMMIT_MESSAGE=""
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -m)
+      COMMIT_MESSAGE="$2"
+      shift 2
+      ;;
+    *)
+      echo "Usage: $0 [-m \"commit message\"]"
+      exit 1
+      ;;
+  esac
+done
 
 echo "🚀 Deploying trackthe.life..."
+
+# Auto-commit if message provided
+if [ -n "$COMMIT_MESSAGE" ]; then
+  if ! git diff-index --quiet HEAD --; then
+    echo "📝 Committing changes: $COMMIT_MESSAGE"
+    git add -A
+    git commit -m "$COMMIT_MESSAGE"
+  else
+    echo "ℹ️  No changes to commit"
+  fi
+fi
 
 # Check if running on server (docker installed = server)
 if command -v docker &> /dev/null; then
