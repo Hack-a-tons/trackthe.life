@@ -7,14 +7,14 @@ This MVP is being built as part of **AI Hack Day by Comet at AWS** (see https://
 The goal:
 
 1. Capture video with an ESP32 (Wi‑Fi for now) and push it to the backend.
-2. Store video and multimodal metadata in **ApertureDB** and run recognition on it. 
-3. Store conversational / user / agent context in **MemMachine** to make the system “remember” past sessions. 
-4. Transcribe audio with **Telnyx Speech‑to‑Text** (OpenAI‑style endpoint) to get text + timestamps. 
-5. Instrument the AI parts with **Comet / Opik** for experiment tracking and evaluation. 
+2. Store video and multimodal metadata in **ApertureDB** and run recognition on it. 
+3. Store conversational / user / agent context in **MemMachine** to make the system “remember” past sessions. 
+4. Transcribe audio with **Telnyx Speech‑to‑Text** (OpenAI‑style endpoint) to get text + timestamps. 
+5. Instrument the AI parts with **Comet / Opik** for experiment tracking and evaluation. 
 6. Visualize everything in a simple **Flutter** app.
 7. Auto‑produce daily → weekly → monthly recap clips.
 
-> **Hardware note:** the Freenove ESP32 kit gives us an ESP32‑WROVER and includes camera web server examples over Wi‑Fi, so the *first* step is to make that camera stream/upload. The board itself does **not** have GPS, and in this kit we treat **audio + GPS** as coming from the **phone**. Audio capture on ESP32 is possible with an I2S mic, but that’s outside first MVP scope. 
+> **Hardware note:** the Freenove ESP32 kit gives us an ESP32‑WROVER and includes camera web server examples over Wi‑Fi, so the *first* step is to make that camera stream/upload. The board itself does **not** have GPS, and in this kit we treat **audio + GPS** as coming from the **phone**. Audio capture on ESP32 is possible with an I2S mic, but that’s outside first MVP scope. 
 
 ---
 
@@ -26,10 +26,10 @@ The goal:
 
 **Backend (Node.js)**
 - Receives media over HTTP (multipart/form-data or simple POST of image/frame).
-- Stores raw media and metadata into **ApertureDB** (images, video segments, embeddings, tags). 
-- Sends audio files/URLs to **Telnyx** for transcription, stores text + timestamps. 
-- Calls **MemMachine** API to persist episodic/profile memories — e.g. “user was at Cafe Venetia 2025‑11‑04 15:10, met person X”. 
-- Reports traces / evals to **Comet/Opik** so we can compare recognition pipelines. 
+- Stores raw media and metadata into **ApertureDB** (images, video segments, embeddings, tags). 
+- Sends audio files/URLs to **Telnyx** for transcription, stores text + timestamps. 
+- Calls **MemMachine** API to persist episodic/profile memories — e.g. “user was at Cafe Venetia 2025‑11‑04 15:10, met person X”. 
+- Reports traces / evals to **Comet/Opik** so we can compare recognition pipelines. 
 
 **Client (Flutter)**
 - Shows list of captured moments (with thumbnails from ApertureDB).
@@ -47,12 +47,12 @@ The goal:
 
 ## Services / Repos
 
-- **ESP32 / Freenove kit** — base firmware from “Camera Web Server” and “Video Web Server” chapters. We only need to tweak Wi‑Fi credentials and upload interval. 
+- **ESP32 / Freenove kit** — base firmware from “Camera Web Server” and “Video Web Server” chapters. We only need to tweak Wi‑Fi credentials and upload interval. 
 - **Node.js backend** — `express` + a tiny ApertureDB client + Telnyx upload + MemMachine client.
-- **ApertureDB** — stores video, images, metadata, and can run recognition workflows. Cloud: https://aperturedata.io or self-hosted. 
-- **MemMachine** — universal memory layer; we call it from Node.js to save per‑user context. Cloud: https://memmachine.ai or self-hosted. 
-- **Telnyx** — uses OpenAI‑compatible `/v2/ai/audio/transcriptions` to turn audio into text + timestamps. 
-- **Comet / Opik** — to log LLM and pipeline runs, and to evaluate ranking of “interesting” events. 
+- **ApertureDB** — stores video, images, metadata, and can run recognition workflows. Cloud: https://aperturedata.io or self-hosted. 
+- **MemMachine** — universal memory layer; we call it from Node.js to save per‑user context. Cloud: https://memmachine.ai or self-hosted. 
+- **Telnyx** — uses OpenAI‑compatible `/v2/ai/audio/transcriptions` to turn audio into text + timestamps. 
+- **Comet / Opik** — to log LLM and pipeline runs, and to evaluate ranking of “interesting” events. 
 
 ---
 
@@ -60,9 +60,9 @@ The goal:
 
 1. **ESP web cam** — get the Freenove ESP32 camera web server running and confirm we can pull frames over Wi‑Fi.
 2. **Uploader scripts** — bash scripts (`#!/usr/bin/env bash`) that POST captured images/video to the Node.js backend.
-3. **Node.js → ApertureDB** — accept upload, create objects, run recognition, store metadata. 
-4. **Node.js → MemMachine** — for every uploaded media record a memory “user X at time T did Y at location L”. 
-5. **Node.js → Telnyx** — send audio, get text, attach to same media object. 
+3. **Node.js → ApertureDB** — accept upload, create objects, run recognition, store metadata. 
+4. **Node.js → MemMachine** — for every uploaded media record a memory “user X at time T did Y at location L”. 
+5. **Node.js → Telnyx** — send audio, get text, attach to same media object. 
 6. **Flutter app** — list media, show recognized entities, play video.
 7. **Clip generator** — Node.js/FFmpeg script that builds daily/weekly recap.
 
