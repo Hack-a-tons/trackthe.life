@@ -52,7 +52,7 @@ This plan follows the order you specified.
 ---
 
 ## 5. Make Flutter app to visualize everything
-- [ ] Flutter project `lifestream_app`
+- [ ] Flutter project `trackthelife_app`
 - [ ] Screens:
     - [ ] Login / choose user
     - [ ] “Timeline” — list uploads (thumbnail, time, location, labels)

@@ -1,4 +1,4 @@
-# LifeStream MVP (working title)
+# trackthe.life
 
 This repository contains the first Proof-of-Concept / MVP for a **lifelogging + auto-highlight generator** inspired by fiction where people have an implanted memory recorder (think *The Final Cut* (2004), the “Grain” from *Black Mirror: The Entire History of You*, or POV-sharing ideas like *Strange Days*). In our case it’s **not** implanted — it’s a small ESP32 camera device + a phone app + AI services.
 
@@ -102,19 +102,6 @@ COMET_WORKSPACE=your_workspace
 ```
 
 No secrets in code — only in `.env`.
-
----
-
-## Naming ideas (optional)
-
-- **FinalCut.Live** (nod to the movie)
-- **GrainKit**
-- **LifeStream**
-- **POVMesh** (because later we merge POVs from different people)
-- **DayCut**
-- **MomentDB**
-
-Pick one and use it as the repo name.
 
 ---
 
