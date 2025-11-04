@@ -35,6 +35,8 @@ services:
     depends_on:
       - memmachine-postgres
       - memmachine-neo4j
+    volumes:
+      - ./cfg.yml:/app/cfg.yml:ro
     networks:
       - trackthelife
 
