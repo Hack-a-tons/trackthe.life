@@ -122,8 +122,8 @@ pause_step() {
     echo -e "\n${YELLOW}Press any key to continue...${NC}"
     read -n 1 -s
   elif [ "$PAUSE_SECONDS" -gt 0 ]; then
-    echo -e "\n${YELLOW}Pausing for ${PAUSE_SECONDS} seconds...${NC}"
-    sleep "$PAUSE_SECONDS"
+    echo -e "\n${YELLOW}Pausing for ${PAUSE_SECONDS} seconds (press any key to skip)...${NC}"
+    read -n 1 -s -t "$PAUSE_SECONDS" || true
   fi
 }
 
