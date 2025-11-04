@@ -33,21 +33,21 @@ This plan follows the order you specified.
 ---
 
 ## 3. Integrate MemMachine / store all findings
-- [ ] Run MemMachine with docker (`docker-compose up -d`) per their README. fileciteturn0file4
-- [ ] In Node.js, after a successful ApertureDB insert, call MemMachine REST to write an episodic memory:
+- [x] Run MemMachine with docker (`docker-compose up -d`) per their README. fileciteturn0file4
+- [x] In Node.js, after a successful ApertureDB insert, call MemMachine REST to write an episodic memory:
       “user: X, time: T, media_id: Y, labels: […], location: L”
-- [ ] Also store profile-level info when available (e.g. frequent locations)
-- [ ] Make a tiny helper `memmachineClient.js` so the rest of the code stays clean
+- [x] Also store profile-level info when available (e.g. frequent locations)
+- [x] Make a tiny helper `memmachineClient.js` so the rest of the code stays clean
 
 ---
 
 ## 4. Integrate speech recognition from Telnyx
-- [ ] From Flutter (or as separate CLI), record a small `.m4a` or `.wav`
-- [ ] Add Node.js endpoint `/api/audio` that accepts audio and forwards it to Telnyx
-- [ ] Call `https://api.telnyx.com/v2/ai/audio/transcriptions` with `multipart/form-data` and `Authorization: Bearer $TELNYX_API_KEY` and selected model. fileciteturn0file3
-- [ ] Store transcription text + timestamps and link to the same media object in ApertureDB
-- [ ] Also mirror transcription into MemMachine as text memory (“user said … at time …”)
-- [ ] Add `scripts/upload_audio.sh` for demo
+- [x] From Flutter (or as separate CLI), record a small `.m4a` or `.wav`
+- [x] Add Node.js endpoint `/api/audio` that accepts audio and forwards it to Telnyx
+- [x] Call `https://api.telnyx.com/v2/ai/audio/transcriptions` with `multipart/form-data` and `Authorization: Bearer $TELNYX_API_KEY` and selected model. fileciteturn0file3
+- [x] Store transcription text + timestamps and link to the same media object in ApertureDB
+- [x] Also mirror transcription into MemMachine as text memory (“user said … at time …”)
+- [x] Add `scripts/upload_audio.sh` for demo
 
 ---
 
