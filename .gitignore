@@ -1,6 +1,9 @@
 # Environment variables
 .env
 
+# ESP32 WiFi credentials
+esp32/**/wifi_config.h
+
 # Dependencies
 node_modules/
 

@@ -14,10 +14,10 @@ This plan follows the order you specified.
 ---
 
 ## 1. ESP web cam (Wi‑Fi connection for the moment)
-- [ ] Open Freenove tutorial, Chapter 34 “Camera Web Server” and 35 “Camera TCP Server”, build and flash the example. fileciteturn0file0
-- [ ] Hardcode Wi‑Fi SSID/PASS for local network
-- [ ] Confirm stream reachable from laptop (MJPEG page or single‑frame snapshot)
-- [ ] Write `scripts/pull_frame.sh` to curl the ESP snapshot endpoint and save to `captures/` locally
+- [x] Open Freenove tutorial, Chapter 34 “Camera Web Server” and 35 “Camera TCP Server”, build and flash the example. fileciteturn0file0
+- [x] Hardcode Wi‑Fi SSID/PASS for local network
+- [x] Confirm stream reachable from laptop (MJPEG page or single‑frame snapshot)
+- [x] Write `scripts/pull_frame.sh` to curl the ESP snapshot endpoint and save to `captures/` locally
 - [ ] (Optional) autosave every N seconds via cron
 
 ---

@@ -11,6 +11,15 @@
 - ✅ docker-compose.yml for ApertureDB, MemMachine, and backend
 - ✅ Basic Express server with health check endpoint
 
+### Step 1: ESP32 Camera
+- ✅ Custom sketch created based on Freenove Chapter 34
+- ✅ WiFi configuration separated to `wifi_config.h`
+- ✅ Auto-capture and upload to Node.js backend
+- ✅ Detailed installation guide in `esp32/README.md`
+- ✅ JPEG frame capture (800x600 SVGA)
+- ✅ WiFi reconnection logic
+- ⚠️ **Requires hardware**: Flash to ESP32-WROVER to test
+
 ### Step 2: Media Upload & ApertureDB Integration
 - ✅ `/api/media` endpoint (POST multipart/form-data)
 - ✅ ApertureDB client service (mock implementation ready for real API)
@@ -54,11 +63,11 @@ node server/index.js
 
 ## Next Steps 🚀
 
-### Step 1: ESP32 Camera (Hardware Required)
-- [ ] Flash Freenove ESP32 with Camera Web Server example
-- [ ] Configure Wi-Fi credentials
-- [ ] Create `scripts/pull_frame.sh` to capture from ESP32
-- [ ] Test end-to-end capture → upload flow
+### Step 1: ESP32 Camera Testing (Hardware Required)
+- [ ] Flash ESP32 with `esp32/trackthelife_camera/trackthelife_camera.ino`
+- [ ] Update `wifi_config.h` with your laptop's IP address
+- [ ] Monitor serial output to verify captures
+- [ ] Confirm frames arriving at backend
 
 ### Step 5: Flutter App
 - [ ] Create Flutter project `trackthelife_app`
