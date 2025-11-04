@@ -9,10 +9,19 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+# Auto-detect environment
+if command -v docker &> /dev/null; then
+  # Running on server - use localhost
+  DEFAULT_BACKEND_URL="http://localhost:4000"
+else
+  # Running on dev machine - use production URL
+  DEFAULT_BACKEND_URL="https://trackthelife.hurated.com"
+fi
+
 # Default settings
 PAUSE_SECONDS=0
 VERBOSE=false
-BACKEND_URL="${BACKEND_URL:-http://localhost:4000}"
+BACKEND_URL="${BACKEND_URL:-$DEFAULT_BACKEND_URL}"
 
 # Parse arguments
 STEPS=()
@@ -45,7 +54,9 @@ EXAMPLES:
   ./demo.sh --pause --verbose all  # Full demo, verbose, wait for key
 
 ENVIRONMENT:
-  BACKEND_URL             Backend URL (default: http://localhost:4000)
+  BACKEND_URL             Backend URL (auto-detected based on environment)
+                          Server: http://localhost:4000
+                          Dev:    https://trackthelife.hurated.com
 
 EOF
       exit 0
