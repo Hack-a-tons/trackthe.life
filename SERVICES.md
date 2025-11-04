@@ -21,12 +21,16 @@ This guide explains how to set up cloud services for trackthe.life. All services
 **Setup**:
 1. Sign up at https://aperturedata.io
 2. Create a new database instance
-3. Get API credentials from dashboard
+3. Get credentials from dashboard:
+   - **Host Name** (e.g., `your-instance.farm0004.cloud.aperturedata.io`)
+   - **Auth Token** (starts with `adbp_`)
 4. Update `.env`:
    ```bash
-   APERTUREDB_URL=https://api.aperturedata.io
-   APERTUREDB_API_KEY=your_key_here
+   APERTUREDB_URL=your-instance.farm0004.cloud.aperturedata.io
+   APERTUREDB_API_KEY=adbp_your_auth_token_here
    ```
+
+**Note**: Don't include `https://` in the URL - the client adds it automatically.
 
 **Recognition Scenarios**:
 - Object detection (people, cars, objects)
@@ -141,8 +145,8 @@ EXTERNAL_PORT=6000
 PUBLIC_URL=https://trackthelife.hurated.com
 
 # All cloud services
-APERTUREDB_URL=https://api.aperturedata.io
-APERTUREDB_API_KEY=your_key
+APERTUREDB_URL=your-instance.farm0004.cloud.aperturedata.io
+APERTUREDB_API_KEY=adbp_your_auth_token
 
 TELNYX_API_KEY=your_key
 
