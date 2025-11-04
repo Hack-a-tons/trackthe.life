@@ -5,11 +5,11 @@ This plan follows the order you specified.
 ---
 
 ## 0. Repo + scaffolding
-- [ ] Create Node.js project (`npm init -y`)
-- [ ] Add deps: `express`, `multer`, `dotenv`, `axios`, `node-fetch` (or `undici`), maybe `ffmpeg-static`, `fluent-ffmpeg`
-- [ ] Add linting + `scripts/` folder for bash demos
-- [ ] Add `docker-compose.yml` for local ApertureDB + MemMachine (both give Docker options) and Node.js
-- [ ] Add `.env.example` with all service URLs
+- [x] Create Node.js project (`npm init -y`)
+- [x] Add deps: `express`, `multer`, `dotenv`, `axios`, `node-fetch` (or `undici`), maybe `ffmpeg-static`, `fluent-ffmpeg`
+- [x] Add linting + `scripts/` folder for bash demos
+- [x] Add `docker-compose.yml` for local ApertureDB + MemMachine (both give Docker options) and Node.js
+- [x] Add `.env.example` with all service URLs
 
 ---
 

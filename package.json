@@ -1,0 +1,29 @@
+{
+  "name": "trackthe.life",
+  "version": "1.0.0",
+  "description": "This repository contains the first Proof-of-Concept / MVP for a **lifelogging + auto-highlight generator** inspired by fiction where people have an implanted memory recorder (think *The Final Cut* (2004), the “Grain” from *Black Mirror: The Entire History of You*, or POV-sharing ideas like *Strange Days*). In our case it’s **not** implanted — it’s a small ESP32 camera device + a phone app + AI services.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hack-a-tons/trackthe.life.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Hack-a-tons/trackthe.life/issues"
+  },
+  "homepage": "https://github.com/Hack-a-tons/trackthe.life#readme",
+  "dependencies": {
+    "axios": "^1.13.2",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "multer": "^2.0.2"
+  }
+}
