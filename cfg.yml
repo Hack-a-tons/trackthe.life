@@ -6,6 +6,24 @@ llm:
   api_version: ${AZURE_OPENAI_API_VERSION}
   deployment_name: ${AZURE_OPENAI_DEPLOYMENT}
 
+episodic_memory:
+  model:
+    provider: azure
+    model: gpt-4
+    api_key: ${AZURE_OPENAI_API_KEY}
+    api_base: ${AZURE_OPENAI_ENDPOINT}
+    api_version: ${AZURE_OPENAI_API_VERSION}
+    deployment_name: ${AZURE_OPENAI_DEPLOYMENT}
+
+profile_memory:
+  model:
+    provider: azure
+    model: gpt-4
+    api_key: ${AZURE_OPENAI_API_KEY}
+    api_base: ${AZURE_OPENAI_ENDPOINT}
+    api_version: ${AZURE_OPENAI_API_VERSION}
+    deployment_name: ${AZURE_OPENAI_DEPLOYMENT}
+
 database:
   postgres:
     host: ${POSTGRES_HOST}
