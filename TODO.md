@@ -14,7 +14,7 @@ This plan follows the order you specified.
 ---
 
 ## 1. ESP web cam (Wi‑Fi connection for the moment)
-- [x] Open Freenove tutorial, Chapter 34 “Camera Web Server” and 35 “Camera TCP Server”, build and flash the example. fileciteturn0file0
+- [x] Open Freenove tutorial, Chapter 34 “Camera Web Server” and 35 “Camera TCP Server”, build and flash the example. 
 - [x] Hardcode Wi‑Fi SSID/PASS for local network
 - [x] Confirm stream reachable from laptop (MJPEG page or single‑frame snapshot)
 - [x] Write `scripts/pull_frame.sh` to curl the ESP snapshot endpoint and save to `captures/` locally
@@ -23,17 +23,17 @@ This plan follows the order you specified.
 ---
 
 ## 2. Upload to ApertureDB / recognize and describe
-- [x] Start ApertureDB locally (see vendor docs). fileciteturn0file2
+- [x] Start ApertureDB locally (see vendor docs). 
 - [x] In Node.js, build `/api/media` endpoint that takes `multipart/form-data` with `file`, `user_id`, `timestamp`, `location?`
 - [x] On upload: call ApertureDB REST/gRPC to create an Image/Video object + store attributes
-- [x] Trigger ApertureDB workflow to run detection/description (faces, objects) — store returned labels in same record. fileciteturn0file2
+- [x] Trigger ApertureDB workflow to run detection/description (faces, objects) — store returned labels in same record. 
 - [x] Write `scripts/upload_frame.sh` that POSTs an image from `captures/` to the endpoint
-- [x] Log the whole pipeline to Comet/Opik (one trace per upload). fileciteturn0file1
+- [x] Log the whole pipeline to Comet/Opik (one trace per upload). 
 
 ---
 
 ## 3. Integrate MemMachine / store all findings
-- [x] Run MemMachine with docker (`docker-compose up -d`) per their README. fileciteturn0file4
+- [x] Run MemMachine with docker (`docker-compose up -d`) per their README. 
 - [x] In Node.js, after a successful ApertureDB insert, call MemMachine REST to write an episodic memory:
       “user: X, time: T, media_id: Y, labels: […], location: L”
 - [x] Also store profile-level info when available (e.g. frequent locations)
@@ -44,7 +44,7 @@ This plan follows the order you specified.
 ## 4. Integrate speech recognition from Telnyx
 - [x] From Flutter (or as separate CLI), record a small `.m4a` or `.wav`
 - [x] Add Node.js endpoint `/api/audio` that accepts audio and forwards it to Telnyx
-- [x] Call `https://api.telnyx.com/v2/ai/audio/transcriptions` with `multipart/form-data` and `Authorization: Bearer $TELNYX_API_KEY` and selected model. fileciteturn0file3
+- [x] Call `https://api.telnyx.com/v2/ai/audio/transcriptions` with `multipart/form-data` and `Authorization: Bearer $TELNYX_API_KEY` and selected model. 
 - [x] Store transcription text + timestamps and link to the same media object in ApertureDB
 - [x] Also mirror transcription into MemMachine as text memory (“user said … at time …”)
 - [x] Add `scripts/upload_audio.sh` for demo
@@ -70,7 +70,7 @@ This plan follows the order you specified.
     - run FFmpeg to stitch
 - [ ] Add `scripts/build_weekly_clip.js` that just stitches daily ones
 - [ ] Store produced clips back in ApertureDB / S3
-- [ ] Log clip building runs to Comet/Opik for quality comparison. fileciteturn0file1
+- [ ] Log clip building runs to Comet/Opik for quality comparison. 
 
 ---
 
@@ -100,4 +100,4 @@ set -euo pipefail
 ---
 
 ## Notes on hardware limits
-- Freenove ESP32 kit shows how to run camera over Wi‑Fi, SD card, and TCP server — reuse those. GPS is **not** in the kit, so the phone must supply it. fileciteturn0file0
+- Freenove ESP32 kit shows how to run camera over Wi‑Fi, SD card, and TCP server — reuse those. GPS is **not** in the kit, so the phone must supply it. 
