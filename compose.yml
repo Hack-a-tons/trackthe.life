@@ -1,6 +1,57 @@
 version: '3.8'
 
 services:
+  # MemMachine - memory layer
+  memmachine:
+    image: ghcr.io/memmachine/memmachine:latest
+    container_name: trackthelife-memmachine
+    restart: unless-stopped
+    ports:
+      - "${MEMMACHINE_PORT:-7000}:8080"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - POSTGRES_HOST=memmachine-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=memmachine
+      - POSTGRES_PASSWORD=${MEMMACHINE_DB_PASSWORD:-memmachine_pass}
+      - POSTGRES_DB=memmachine
+      - NEO4J_URI=bolt://memmachine-neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=${MEMMACHINE_NEO4J_PASSWORD:-neo4j_pass}
+    depends_on:
+      - memmachine-postgres
+      - memmachine-neo4j
+    networks:
+      - trackthelife
+
+  # PostgreSQL for MemMachine
+  memmachine-postgres:
+    image: pgvector/pgvector:pg16
+    container_name: trackthelife-memmachine-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=memmachine
+      - POSTGRES_PASSWORD=${MEMMACHINE_DB_PASSWORD:-memmachine_pass}
+      - POSTGRES_DB=memmachine
+    volumes:
+      - memmachine_postgres_data:/var/lib/postgresql/data
+    networks:
+      - trackthelife
+
+  # Neo4j for MemMachine
+  memmachine-neo4j:
+    image: neo4j:5.15.0
+    container_name: trackthelife-memmachine-neo4j
+    restart: unless-stopped
+    environment:
+      - NEO4J_AUTH=neo4j/${MEMMACHINE_NEO4J_PASSWORD:-neo4j_pass}
+      - NEO4J_PLUGINS=["apoc"]
+    volumes:
+      - memmachine_neo4j_data:/data
+    networks:
+      - trackthelife
+
+  # Node.js backend
   backend:
     build: .
     container_name: trackthelife-backend
@@ -13,16 +64,21 @@ services:
       - APERTUREDB_URL=${APERTUREDB_URL}
       - APERTUREDB_API_KEY=${APERTUREDB_API_KEY}
       - TELNYX_API_KEY=${TELNYX_API_KEY}
-      - MEMMACHINE_URL=${MEMMACHINE_URL}
-      - MEMMACHINE_API_KEY=${MEMMACHINE_API_KEY}
+      - MEMMACHINE_URL=http://memmachine:8080
       - COMET_API_KEY=${COMET_API_KEY}
       - COMET_WORKSPACE=${COMET_WORKSPACE}
     env_file:
       - .env
+    depends_on:
+      - memmachine
     volumes:
       - ./captures:/app/captures
     networks:
       - trackthelife
+
+volumes:
+  memmachine_postgres_data:
+  memmachine_neo4j_data:
 
 networks:
   trackthelife:

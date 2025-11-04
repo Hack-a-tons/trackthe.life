@@ -49,10 +49,11 @@ APERTUREDB_URL=http://localhost:5555
 
 ## 2. MemMachine (Memory Layer)
 
-### Cloud Service ✅ Recommended
+### Docker Service ✅ Recommended
 
-**Website**: https://memmachine.ai  
-**GitHub**: https://github.com/MemMachine/MemMachine
+**Included in docker-compose stack**
+
+MemMachine runs as part of the trackthe.life Docker Compose setup with PostgreSQL and Neo4j backends.
 
 **Features**:
 - Episodic memory storage
@@ -62,19 +63,28 @@ APERTUREDB_URL=http://localhost:5555
 - Cross-session memory
 
 **Setup**:
-1. Sign up at https://memmachine.ai
-2. Create API key
-3. Update `.env`:
+1. Get OpenAI API key from https://platform.openai.com/api-keys
+2. Update `.env`:
    ```bash
-   MEMMACHINE_URL=https://api.memmachine.ai
-   MEMMACHINE_API_KEY=your_key_here
+   OPENAI_API_KEY=sk-your_key_here
+   MEMMACHINE_PORT=7000
+   MEMMACHINE_URL=http://localhost:7000
+   MEMMACHINE_DB_PASSWORD=secure_password
+   MEMMACHINE_NEO4J_PASSWORD=secure_password
+   ```
+3. Start services:
+   ```bash
+   docker compose up -d
    ```
 
-**Alternative: Self-Hosted**
-```bash
-docker run -p 7860:7860 ghcr.io/memmachine/memmachine:latest
-MEMMACHINE_URL=http://localhost:7860
-```
+**Services included**:
+- MemMachine API (port 7000)
+- PostgreSQL with pgvector
+- Neo4j graph database
+
+**API Endpoint**: `http://localhost:7000/v1/memories`
+
+**Note**: MemMachine requires OpenAI API key for embeddings and language models. Tokens are consumed during usage.
 
 ---
 
@@ -144,15 +154,21 @@ PORT=4000
 EXTERNAL_PORT=6000
 PUBLIC_URL=https://trackthelife.hurated.com
 
-# All cloud services
+# ApertureDB (cloud)
 APERTUREDB_URL=your-instance.farm0004.cloud.aperturedata.io
 APERTUREDB_API_KEY=adbp_your_auth_token
 
+# Telnyx (cloud)
 TELNYX_API_KEY=your_key
 
-MEMMACHINE_URL=https://api.memmachine.ai
-MEMMACHINE_API_KEY=your_key
+# MemMachine (Docker service)
+MEMMACHINE_PORT=7000
+MEMMACHINE_URL=http://localhost:7000
+MEMMACHINE_DB_PASSWORD=secure_password
+MEMMACHINE_NEO4J_PASSWORD=secure_password
+OPENAI_API_KEY=sk-your_key
 
+# Comet (cloud)
 COMET_API_KEY=your_key
 COMET_WORKSPACE=trackthelife
 ```

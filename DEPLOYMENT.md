@@ -5,6 +5,7 @@
 ### Prerequisites
 - Docker and Docker Compose installed on server
 - Nginx configured to proxy `https://trackthelife.hurated.com` → `localhost:6000`
+- OpenAI API key for MemMachine
 
 ### Deploy Steps
 
@@ -101,15 +102,18 @@ PORT=4000                                    # Internal container port
 EXTERNAL_PORT=6000                           # Host port (nginx proxies here)
 PUBLIC_URL=https://trackthelife.hurated.com  # Public-facing URL
 
-APERTUREDB_URL=http://localhost:5555
-APERTUREDB_API_KEY=your_key_here
+APERTUREDB_URL=your-instance.farm0004.cloud.aperturedata.io
+APERTUREDB_API_KEY=adbp_your_key
 
-TELNYX_API_KEY=your_key_here
+TELNYX_API_KEY=your_key
 
-MEMMACHINE_URL=http://localhost:7860
-MEMMACHINE_API_KEY=your_key_here
+MEMMACHINE_PORT=7000                         # MemMachine external port
+MEMMACHINE_URL=http://localhost:7000         # For local access
+MEMMACHINE_DB_PASSWORD=secure_password
+MEMMACHINE_NEO4J_PASSWORD=secure_password
+OPENAI_API_KEY=sk-your_key                   # Required for MemMachine
 
-COMET_API_KEY=your_key_here
+COMET_API_KEY=your_key
 COMET_WORKSPACE=trackthelife
 ```
 
