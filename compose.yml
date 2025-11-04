@@ -24,6 +24,8 @@ services:
       - POSTGRES_PASSWORD=${MEMMACHINE_DB_PASSWORD:-memmachine_pass}
       - POSTGRES_DB=memmachine
       - NEO4J_URI=bolt://memmachine-neo4j:7687
+      - NEO4J_HOST=memmachine-neo4j
+      - NEO4J_PORT=7687
       - NEO4J_USER=neo4j
       - NEO4J_PASSWORD=${MEMMACHINE_NEO4J_PASSWORD:-neo4j_pass}
       # Model configuration
@@ -38,6 +40,7 @@ services:
       - memmachine-neo4j
     volumes:
       - ./memmachine-start.sh:/memmachine-start.sh:ro
+      - ./cfg.yml.template:/app/cfg.yml.template:ro
     networks:
       - trackthelife
 

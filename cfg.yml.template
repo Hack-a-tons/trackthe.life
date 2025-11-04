@@ -1,0 +1,65 @@
+logging:
+  path: /tmp/memory_log
+  level: info
+
+long_term_memory:
+  derivative_deriver: sentence
+  metadata_prefix: "[\$timestamp] \$producer_id: "
+  embedder: azure_embedder
+  reranker: identity_reranker
+  vector_graph_store: neo4j_storage
+
+SessionDB:
+  uri: postgresql://\${POSTGRES_USER}:\${POSTGRES_PASSWORD}@\${POSTGRES_HOST}:\${POSTGRES_PORT}/\${POSTGRES_DB}
+
+Model:
+  azure_model:
+    model_vendor: azure
+    model: \${AZURE_OPENAI_DEPLOYMENT}
+    api_key: \${AZURE_OPENAI_API_KEY}
+    api_base: \${AZURE_OPENAI_ENDPOINT}
+    api_version: \${AZURE_OPENAI_API_VERSION}
+
+storage:
+  neo4j_storage:
+    vendor_name: neo4j
+    host: \${NEO4J_HOST}
+    port: \${NEO4J_PORT}
+    user: \${NEO4J_USER}
+    password: \${NEO4J_PASSWORD}
+
+  postgres_storage:
+    vendor_name: postgres
+    host: \${POSTGRES_HOST}
+    port: \${POSTGRES_PORT}
+    user: \${POSTGRES_USER}
+    db_name: \${POSTGRES_DB}
+    password: \${POSTGRES_PASSWORD}
+
+profile_memory:
+  llm_model: azure_model
+  embedding_model: azure_embedder
+  database: postgres_storage
+  prompt: profile_prompt
+
+sessionMemory:
+  model_name: azure_model
+  message_capacity: 500
+  max_message_length: 16000
+  max_token_num: 8000
+
+embedder:
+  azure_embedder:
+    name: azure
+    config:
+      model: text-embedding-3-small
+      api_key: \${AZURE_OPENAI_API_KEY}
+      api_base: \${AZURE_OPENAI_ENDPOINT}
+      api_version: \${AZURE_OPENAI_API_VERSION}
+
+reranker:
+  identity_reranker:
+    type: identity
+
+prompt:
+  profile_prompt: "You are a helpful assistant that maintains user profiles."

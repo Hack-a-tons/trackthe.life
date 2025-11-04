@@ -3,45 +3,15 @@ set -e
 
 echo "Generating cfg.yml from environment variables..."
 
-# Generate cfg.yml from environment variables (heredoc with variable substitution)
-cat > /app/cfg.yml <<EOF
-episodic_memory:
-  model:
-    provider: azure
-    model: gpt-4
-    api_key: $AZURE_OPENAI_API_KEY
-    api_base: $AZURE_OPENAI_ENDPOINT
-    api_version: $AZURE_OPENAI_API_VERSION
-    deployment_name: $AZURE_OPENAI_DEPLOYMENT
+# Extract Neo4j host from URI
+NEO4J_HOST=$(echo $NEO4J_URI | sed 's|bolt://||' | cut -d: -f1)
+NEO4J_PORT=$(echo $NEO4J_URI | sed 's|bolt://||' | cut -d: -f2)
 
-profile_memory:
-  model:
-    provider: azure
-    model: gpt-4
-    api_key: $AZURE_OPENAI_API_KEY
-    api_base: $AZURE_OPENAI_ENDPOINT
-    api_version: $AZURE_OPENAI_API_VERSION
-    deployment_name: $AZURE_OPENAI_DEPLOYMENT
-
-database:
-  postgres:
-    host: $POSTGRES_HOST
-    port: $POSTGRES_PORT
-    database: $POSTGRES_DB
-    user: $POSTGRES_USER
-    password: $POSTGRES_PASSWORD
-  neo4j:
-    uri: $NEO4J_URI
-    user: $NEO4J_USER
-    password: $NEO4J_PASSWORD
-
-server:
-  host: 0.0.0.0
-  port: 8080
-EOF
+# Generate cfg.yml with proper substitution
+envsubst < /app/cfg.yml.template > /app/cfg.yml
 
 echo "cfg.yml generated successfully"
-ls -la /app/cfg.yml
+cat /app/cfg.yml
 
 # Start MemMachine
 echo "Starting MemMachine..."
