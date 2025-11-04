@@ -100,3 +100,21 @@ docker-compose up -d
 - Secrets are in `.env` (gitignored), never in code
 - All bash scripts follow `set -euo pipefail` pattern
 - Project name standardized to `trackthe.life` throughout
+
+## Demo Script
+
+Interactive demo available: `./demo.sh`
+
+**Features**:
+- Step-by-step workflow demonstration
+- Configurable pause between steps
+- Verbose mode for debugging
+- Individual step testing
+- Color-coded output
+
+**Usage**:
+```bash
+./demo.sh -p5 all          # Full demo with 5 sec pauses
+./demo.sh -v upload-image  # Test image upload with verbose output
+./demo.sh --help           # Show all options
+```

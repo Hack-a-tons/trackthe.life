@@ -70,6 +70,32 @@ The goal:
 
 ## Bash demo scripts
 
+## Demo
+
+Run the interactive demo to test the complete workflow:
+
+```bash
+# Full demo with pauses
+./demo.sh -p all
+
+# Quick demo (5 second pauses)
+./demo.sh -p5 all
+
+# Verbose mode (show curl requests and responses)
+./demo.sh -v all
+
+# Test individual components
+./demo.sh health
+./demo.sh upload-image
+./demo.sh upload-audio
+
+# See all options
+./demo.sh --help
+```
+
+---
+
+
 All demo scripts should:
 ```bash
 #!/usr/bin/env bash
