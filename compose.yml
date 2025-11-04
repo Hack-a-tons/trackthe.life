@@ -1,9 +1,9 @@
-version: '3.8'
-
 services:
-  # MemMachine - memory layer
+  # MemMachine - memory layer (build from source)
   memmachine:
-    image: ghcr.io/memmachine/memmachine:latest
+    build:
+      context: https://github.com/MemMachine/MemMachine.git
+      dockerfile: Dockerfile
     container_name: trackthelife-memmachine
     restart: unless-stopped
     ports:
