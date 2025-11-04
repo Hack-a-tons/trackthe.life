@@ -8,6 +8,7 @@
 #include "esp_camera.h"
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 #include "wifi_config.h"
 #include "camera_pins.h"
 
@@ -27,6 +28,7 @@ void setup() {
   connectWiFi();
   
   Serial.println("=== Setup Complete ===");
+  Serial.printf("Backend: %s\n", BACKEND_URL);
   Serial.printf("Capturing every %lu ms\n", CAPTURE_INTERVAL_MS);
 }
 
@@ -124,9 +126,16 @@ void captureAndUpload() {
   
   // Upload to backend
   HTTPClient http;
-  String url = String("http://") + BACKEND_HOST + ":" + BACKEND_PORT + UPLOAD_ENDPOINT;
+  String url = String(BACKEND_URL) + UPLOAD_ENDPOINT;
   
-  http.begin(url);
+  // Check if HTTPS
+  if (url.startsWith("https://")) {
+    WiFiClientSecure *client = new WiFiClientSecure;
+    client->setInsecure();  // Skip certificate validation
+    http.begin(*client, url);
+  } else {
+    http.begin(url);
+  }
   
   // Build multipart form data
   String boundary = "----trackthelife" + String(millis());

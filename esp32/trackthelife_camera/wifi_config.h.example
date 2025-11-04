@@ -5,7 +5,7 @@
   
   INSTRUCTIONS:
   1. Copy this file to wifi_config.h
-  2. Update WiFi credentials and backend IP
+  2. Update WiFi credentials and backend URL
   3. Do NOT commit wifi_config.h (it's in .gitignore)
 **********************************************************************/
 
@@ -17,9 +17,12 @@ const char *WIFI_SSID = "YourWiFiName";
 const char *WIFI_PASSWORD = "YourWiFiPassword";
 
 // Backend server configuration
-const char *BACKEND_HOST = "192.168.1.100";  // Change to your laptop's IP
-const int BACKEND_PORT = 4000;
+// For production (HTTPS):
+const char *BACKEND_URL = "https://trackthelife.hurated.com";
 const char *UPLOAD_ENDPOINT = "/api/media";
+
+// For local testing (HTTP):
+// const char *BACKEND_URL = "http://192.168.1.100:4000";
 
 // Device identification
 const char *USER_ID = "esp32-cam-01";

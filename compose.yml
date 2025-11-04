@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: trackthelife-backend
+    restart: unless-stopped
+    ports:
+      - "${EXTERNAL_PORT:-6000}:${PORT:-4000}"
+    environment:
+      - PORT=${PORT:-4000}
+      - PUBLIC_URL=${PUBLIC_URL}
+      - APERTUREDB_URL=${APERTUREDB_URL}
+      - APERTUREDB_API_KEY=${APERTUREDB_API_KEY}
+      - TELNYX_API_KEY=${TELNYX_API_KEY}
+      - MEMMACHINE_URL=${MEMMACHINE_URL}
+      - MEMMACHINE_API_KEY=${MEMMACHINE_API_KEY}
+      - COMET_API_KEY=${COMET_API_KEY}
+      - COMET_WORKSPACE=${COMET_WORKSPACE}
+    env_file:
+      - .env
+    volumes:
+      - ./captures:/app/captures
+    networks:
+      - trackthelife
+
+networks:
+  trackthelife:
+    name: trackthelife-network
