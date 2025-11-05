@@ -186,12 +186,30 @@ step_upload_image() {
     # Create test image if doesn't exist
     if [ ! -f "captures/test.jpg" ]; then
       mkdir -p captures
-      print_info "Creating test image..."
-      # Create a simple colored square as test image
-      if command -v convert &> /dev/null; then
-        convert -size 100x100 xc:blue captures/test.jpg 2>/dev/null || echo "Test" > captures/test.jpg
+      print_info "Using real sample photo..."
+      
+      # Use real sample photos instead of generating test images
+      SAMPLE_PHOTOS=(
+        "$HOME/Documents/Works/video/2025.11.03/alisa_future_girl.png"
+        "$HOME/Documents/Works/video/2025.11.03/kolya_1980s_boy.png"
+        "$HOME/Documents/Works/video/2025.10.06/Sora/first_frame.jpg"
+      )
+      
+      # Pick a random sample photo
+      RANDOM_INDEX=$((RANDOM % ${#SAMPLE_PHOTOS[@]}))
+      SAMPLE_PHOTO="${SAMPLE_PHOTOS[$RANDOM_INDEX]}"
+      
+      if [ -f "$SAMPLE_PHOTO" ]; then
+        cp "$SAMPLE_PHOTO" captures/test.jpg
+        print_verbose "Copied: $(basename "$SAMPLE_PHOTO")"
       else
-        echo "Test image data" > captures/test.jpg
+        # Fallback to simple test image
+        print_info "Sample photos not found, creating test image..."
+        if command -v convert &> /dev/null; then
+          convert -size 100x100 xc:blue captures/test.jpg 2>/dev/null || echo "Test" > captures/test.jpg
+        else
+          echo "Test image data" > captures/test.jpg
+        fi
       fi
     fi
     IMAGE_FILE="captures/test.jpg"

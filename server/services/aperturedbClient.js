@@ -4,9 +4,9 @@ const path = require('path');
 
 class ApertureDBClient {
   constructor() {
-    this.host = process.env.APERTUREDB_URL;
-    this.token = process.env.APERTUREDB_API_KEY;
-    this.useHttps = !this.host.startsWith('http');
+    // Use Azure Computer Vision instead of ApertureDB
+    this.azureEndpoint = process.env.AZURE_OPENAI_ENDPOINT?.replace('/openai', '');
+    this.azureKey = process.env.AZURE_OPENAI_API_KEY;
     this.storageDir = path.join(__dirname, '../../uploads');
     this.initStorage();
   }
@@ -15,69 +15,78 @@ class ApertureDBClient {
     try {
       await fs.mkdir(this.storageDir, { recursive: true });
     } catch (error) {
-      console.error('[ApertureDB] Storage init error:', error.message);
+      console.error('[Storage] Init error:', error.message);
+    }
+  }
+
+  async analyzeImage(buffer) {
+    if (!this.azureEndpoint || !this.azureKey) {
+      console.log('[Vision] Azure not configured, using mock data');
+      return { description: 'person, indoor, furniture', tags: ['person', 'indoor', 'furniture'] };
+    }
+
+    try {
+      const url = `${this.azureEndpoint}/vision/v3.2/analyze?visualFeatures=Description,Tags,Objects`;
+      
+      const response = await axios.post(url, buffer, {
+        headers: {
+          'Ocp-Apim-Subscription-Key': this.azureKey,
+          'Content-Type': 'application/octet-stream'
+        },
+        timeout: 15000
+      });
+
+      const description = response.data.description?.captions?.[0]?.text || 'No description';
+      const tags = response.data.tags?.map(t => t.name).slice(0, 5) || [];
+      const objects = response.data.objects?.map(o => o.object) || [];
+
+      console.log('[Vision] Analysis successful:', { description, tags: tags.length, objects: objects.length });
+      
+      return {
+        description,
+        tags: [...new Set([...tags, ...objects])],
+        confidence: response.data.description?.captions?.[0]?.confidence
+      };
+    } catch (error) {
+      console.error('[Vision] Error:', error.response?.data || error.message);
+      return { description: 'Analysis failed', tags: ['unknown'] };
     }
   }
 
   async addImage(buffer, metadata) {
+    const mediaId = `adb_${Date.now()}`;
+    const filename = `${mediaId}.jpg`;
+    const filepath = path.join(this.storageDir, filename);
+    
     try {
-      const url = this.useHttps ? `https://${this.host}/api/v1/images` : `${this.host}/api/v1/images`;
+      // Store locally
+      await fs.writeFile(filepath, buffer);
+      console.log('[Storage] Image stored:', filepath);
       
-      const response = await axios.post(url, {
-        image: buffer.toString('base64'),
-        metadata
-      }, {
-        headers: {
-          'Authorization': `Bearer ${this.token}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 10000
-      });
+      // Analyze with Azure Computer Vision
+      const analysis = await this.analyzeImage(buffer);
       
-      console.log('[ApertureDB] Image stored successfully');
-      return response.data;
-    } catch (error) {
-      console.error('[ApertureDB] Error:', error.message, '- using local storage');
-      
-      // Fallback: store locally
-      const mediaId = `adb_${Date.now()}`;
-      const filename = `${mediaId}.jpg`;
-      const filepath = path.join(this.storageDir, filename);
-      
-      try {
-        await fs.writeFile(filepath, buffer);
-        console.log('[ApertureDB] Image stored locally:', filepath);
-      } catch (fsError) {
-        console.error('[ApertureDB] Local storage error:', fsError.message);
-      }
-      
-      // Return mock data with basic detection
       return { 
         id: mediaId,
-        labels: ['person', 'indoor', 'furniture'],
+        labels: analysis.tags,
+        description: analysis.description,
+        confidence: analysis.confidence,
         stored_locally: true,
         filepath
+      };
+    } catch (error) {
+      console.error('[Storage] Error:', error.message);
+      return { 
+        id: mediaId,
+        labels: ['error'],
+        description: 'Storage failed'
       };
     }
   }
 
   async query(queryObj) {
-    try {
-      const url = this.useHttps ? `https://${this.host}/api/v1/query` : `${this.host}/api/v1/query`;
-      
-      const response = await axios.post(url, queryObj, {
-        headers: {
-          'Authorization': `Bearer ${this.token}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 10000
-      });
-      
-      return response.data;
-    } catch (error) {
-      console.error('[ApertureDB] Query error:', error.message);
-      return null;
-    }
+    console.log('[Query] Not implemented for local storage');
+    return null;
   }
 }
 
