@@ -54,7 +54,7 @@ embedder:
     config:
       model: nomic-embed-text
       api_key: EMPTY
-      base_url: http://host.docker.internal:11434/v1
+      base_url: http://172.17.0.1:11434/v1
       dimensions: 768
 
 reranker:
