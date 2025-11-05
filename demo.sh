@@ -47,7 +47,7 @@ STEPS (run individually or 'all' for full demo):
   all                     Run complete demo workflow
   health                  Check backend health
   upload-image            Upload test image to backend
-  upload-audio            Upload test audio for transcription
+  upload-audio            Show video audio transcription info
   query-memories          Query stored memories
   summary                 Show system summary
 
@@ -353,35 +353,15 @@ step_upload_image() {
 }
 
 step_upload_audio() {
-  print_step "Step 3: Upload Audio for Speech Recognition"
-  print_info "Simulating audio capture from phone..."
-  
-  # Create test audio file
-  if [ ! -f "captures/test.m4a" ]; then
-    mkdir -p captures
-    print_info "Creating test audio file..."
-    echo "Test audio data" > captures/test.m4a
-  fi
-  
-  print_info "Uploading audio to backend for Telnyx transcription..."
-  print_verbose "File: captures/test.m4a"
-  
-  response=$(curl -s -X POST "${BACKEND_URL}/api/audio" \
-    -F "file=@captures/test.m4a" \
-    -F "user_id=demo-user" \
-    -F "timestamp=$(date -Iseconds)")
-  
-  if [ "$VERBOSE" = true ]; then
-    print_verbose "Response: $response"
-  fi
-  
-  if echo "$response" | grep -q '"status":"ok"'; then
-    print_success "Audio transcribed successfully!"
-    transcription=$(echo "$response" | grep -o '"transcription":"[^"]*"' | cut -d'"' -f4)
-    echo "  Transcription: $transcription"
-  else
-    print_error "Audio transcription failed"
-  fi
+  print_step "Step 3: Video Audio Transcription"
+  print_info "Audio is now automatically extracted from video files..."
+  echo ""
+  print_info "When you upload a video:"
+  echo "  1. FFmpeg extracts audio track → .wav file"
+  echo "  2. Azure Whisper transcribes audio → text"
+  echo "  3. Visual + Audio combined in MemMachine memory"
+  echo ""
+  print_success "Video audio transcription is automatic - no separate upload needed!"
   
   pause_step
 }
