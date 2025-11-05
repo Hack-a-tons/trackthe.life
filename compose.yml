@@ -2,8 +2,8 @@ services:
   # MemMachine - memory layer (build from source)
   memmachine:
     build:
-      context: https://github.com/MemMachine/MemMachine.git
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.memmachine
     container_name: trackthelife-memmachine
     restart: unless-stopped
     entrypoint: ["/bin/sh", "/memmachine-start.sh"]
