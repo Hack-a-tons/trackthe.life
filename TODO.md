@@ -51,7 +51,38 @@ This plan follows the order you specified.
 
 ---
 
-## 5. Make Flutter app to visualize everything
+## 5. Run demo and review actual results (CURRENT - 2025-11-04)
+- [ ] Execute `./demo.sh -v all` to run full workflow
+- [ ] Review ApertureDB results: object detection, image storage, metadata
+- [ ] Review MemMachine context: episodic memories, user profile
+- [ ] Review Telnyx transcription: text output, timestamps
+- [ ] Review Comet stats: traces, metrics, pipeline performance
+- [ ] Document findings and verify all integrations working
+
+---
+
+## 6. Integrate real ESP32 camera
+- [ ] Configure ESP32 with production Wi-Fi credentials
+- [ ] Test ESP32 camera capture endpoint
+- [ ] Run demo with `--esp32-url http://<esp32-ip>` flag
+- [ ] Verify real camera images flow through full pipeline
+- [ ] Test continuous capture mode
+
+---
+
+## 7. Build clip generator for daily/weekly recaps
+- [ ] Add Node.js script `scripts/build_daily_clip.js`:
+    - query ApertureDB for media in last 24h
+    - rank by: has people, has speech, is moving, has known location
+    - produce JSON EDL
+    - run FFmpeg to stitch
+- [ ] Add `scripts/build_weekly_clip.js` that just stitches daily ones
+- [ ] Store produced clips back in ApertureDB / S3
+- [ ] Log clip building runs to Comet/Opik for quality comparison
+
+---
+
+## 8. Make Flutter app to visualize everything
 - [ ] Flutter project `trackthelife_app`
 - [ ] Screens:
     - [ ] Login / choose user
@@ -74,7 +105,7 @@ This plan follows the order you specified.
 
 ---
 
-## 7. Everything else afterwards (post‑MVP plan)
+## 9. Everything else afterwards (post‑MVP plan)
 - [ ] ESP32 audio via I2S mic (true on‑device audio)
 - [ ] BLE/Wi‑Fi Direct from ESP to phone
 - [ ] On‑device event detection (motion, face)
