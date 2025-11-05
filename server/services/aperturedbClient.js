@@ -53,6 +53,13 @@ class ApertureDBClient {
     }
   }
 
+  async analyzeVideo(buffer) {
+    // For video, extract first frame and analyze it
+    // In production, you'd use Azure Video Indexer
+    console.log('[Vision] Video analysis: analyzing as image (first frame)');
+    return this.analyzeImage(buffer);
+  }
+
   async addImage(buffer, metadata) {
     const mediaId = `adb_${Date.now()}`;
     const filename = `${mediaId}.jpg`;
@@ -80,6 +87,39 @@ class ApertureDBClient {
         id: mediaId,
         labels: ['error'],
         description: 'Storage failed'
+      };
+    }
+  }
+
+  async addVideo(buffer, metadata) {
+    const mediaId = `vid_${Date.now()}`;
+    const filename = `${mediaId}.mp4`;
+    const filepath = path.join(this.storageDir, filename);
+    
+    try {
+      // Store locally
+      await fs.writeFile(filepath, buffer);
+      console.log('[Storage] Video stored:', filepath);
+      
+      // Analyze video (simplified - just analyze as image)
+      const analysis = await this.analyzeVideo(buffer);
+      
+      return { 
+        id: mediaId,
+        labels: analysis.tags,
+        description: analysis.description,
+        confidence: analysis.confidence,
+        stored_locally: true,
+        filepath,
+        type: 'video'
+      };
+    } catch (error) {
+      console.error('[Storage] Error:', error.message);
+      return { 
+        id: mediaId,
+        labels: ['error'],
+        description: 'Storage failed',
+        type: 'video'
       };
     }
   }

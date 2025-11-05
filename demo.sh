@@ -178,6 +178,35 @@ curl_request() {
 }
 
 # Demo steps
+step_show_samples() {
+  print_step "Available Samples"
+  print_info "Opening sample files for preview..."
+  echo ""
+  
+  # Find all sample files
+  SAMPLE_FILES=(sample/*.jpg sample/*.jpeg sample/*.png sample/*.mov sample/*.mp4)
+  OPENED_COUNT=0
+  
+  for file in "${SAMPLE_FILES[@]}"; do
+    if [ -f "$file" ]; then
+      echo "  📁 $(basename "$file")"
+      if command -v open &> /dev/null; then
+        open "$file" 2>/dev/null &
+        OPENED_COUNT=$((OPENED_COUNT + 1))
+      fi
+    fi
+  done
+  
+  if [ $OPENED_COUNT -gt 0 ]; then
+    echo ""
+    print_success "Opened $OPENED_COUNT sample files in Preview"
+  else
+    print_info "No sample files found in sample/ directory"
+  fi
+  
+  pause_step
+}
+
 step_health() {
   print_step "Step 1: Health Check"
   print_info "Checking if backend server is running..."
@@ -204,42 +233,32 @@ step_upload_image() {
     # Create test image if doesn't exist
     if [ ! -f "captures/test.jpg" ]; then
       mkdir -p captures
-      print_info "Using real sample photo..."
+      print_info "Using sample from repo..."
       
-      # Use real sample photos from captures directory
-      SAMPLE_PHOTOS=(
-        "captures/sample1.jpg"
-        "captures/sample2.jpg"
-        "captures/sample3.jpg"
-      )
+      # Use samples from repo sample/ folder
+      SAMPLE_FILES=(sample/*.jpg sample/*.jpeg sample/*.png sample/*.mov sample/*.mp4)
+      AVAILABLE_SAMPLES=()
       
-      # Pick a random sample photo
-      RANDOM_INDEX=$((RANDOM % ${#SAMPLE_PHOTOS[@]}))
-      SAMPLE_PHOTO="${SAMPLE_PHOTOS[$RANDOM_INDEX]}"
+      for file in "${SAMPLE_FILES[@]}"; do
+        if [ -f "$file" ]; then
+          AVAILABLE_SAMPLES+=("$file")
+        fi
+      done
       
-      if [ -f "$SAMPLE_PHOTO" ]; then
-        cp "$SAMPLE_PHOTO" captures/test.jpg
-        print_verbose "Using: $(basename "$SAMPLE_PHOTO")"
+      if [ ${#AVAILABLE_SAMPLES[@]} -gt 0 ]; then
+        # Pick a random sample
+        RANDOM_INDEX=$((RANDOM % ${#AVAILABLE_SAMPLES[@]}))
+        SAMPLE_FILE="${AVAILABLE_SAMPLES[$RANDOM_INDEX]}"
+        cp "$SAMPLE_FILE" captures/test.jpg
+        print_verbose "Using: $(basename "$SAMPLE_FILE")"
       else
-        # Fallback: try to find any sample in Documents
-        ALT_SAMPLES=(
-          "$HOME/Documents/Works/video/2025.11.03/alisa_future_girl.png"
-          "$HOME/Documents/Works/video/2025.11.03/kolya_1980s_boy.png"
-          "$HOME/Documents/Works/video/2025.10.06/Sora/first_frame.jpg"
-        )
-        FOUND=false
-        for alt in "${ALT_SAMPLES[@]}"; do
-          if [ -f "$alt" ]; then
-            cp "$alt" captures/test.jpg
-            print_verbose "Using: $(basename "$alt")"
-            FOUND=true
-            break
-          fi
-        done
-        
-        if [ "$FOUND" = false ]; then
-          # Final fallback to simple test image
-          print_info "Sample photos not found, creating test image..."
+        # Fallback to captures directory
+        if [ -f "captures/sample1.jpg" ]; then
+          cp captures/sample1.jpg captures/test.jpg
+          print_verbose "Using: captures/sample1.jpg"
+        else
+          # Final fallback
+          print_info "No samples found, creating test image..."
           if command -v convert &> /dev/null; then
             convert -size 100x100 xc:blue captures/test.jpg 2>/dev/null || echo "Test" > captures/test.jpg
           else
@@ -445,6 +464,7 @@ EOF
   for step in "${STEPS[@]}"; do
     case $step in
       all)
+        step_show_samples
         step_health
         step_upload_image
         step_upload_audio
