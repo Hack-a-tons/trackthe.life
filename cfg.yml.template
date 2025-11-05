@@ -5,7 +5,7 @@ logging:
 long_term_memory:
   derivative_deriver: sentence
   metadata_prefix: "[TIMESTAMP] PRODUCER_ID: "
-  embedder: azure_embedder
+  embedder: ollama_embedder
   reranker: identity_reranker
   vector_graph_store: neo4j_storage
 
@@ -38,7 +38,7 @@ storage:
 
 profile_memory:
   llm_model: azure_model
-  embedding_model: azure_embedder
+  embedding_model: ollama_embedder
   database: postgres_storage
   prompt: profile_prompt
 
@@ -49,13 +49,13 @@ sessionMemory:
   max_token_num: 8000
 
 embedder:
-  azure_embedder:
+  ollama_embedder:
     name: openai
     config:
-      model: text-embedding-3-large
-      api_key: ${AZURE_OPENAI_API_KEY}
-      base_url: ${AZURE_OPENAI_ENDPOINT}/openai/deployments/text-embedding-3-large
-      api_version: ${AZURE_OPENAI_API_VERSION}
+      model: nomic-embed-text
+      api_key: EMPTY
+      base_url: http://host.docker.internal:11434/v1
+      dimensions: 768
 
 reranker:
   identity_reranker:
