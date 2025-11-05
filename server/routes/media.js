@@ -35,7 +35,13 @@ router.post('/media', upload.single('file'), async (req, res) => {
       ipLocation
     };
     
-    const apertureResult = await aperturedb.addImage(req.file.buffer, metadata);
+    // Detect if it's a video file
+    const isVideo = req.file.mimetype?.startsWith('video/') || 
+                    /\.(mp4|mov|avi|mkv)$/i.test(req.file.originalname);
+    
+    const apertureResult = isVideo 
+      ? await aperturedb.addVideo(req.file.buffer, metadata)
+      : await aperturedb.addImage(req.file.buffer, metadata);
     
     // Build memory text with location info and description
     let memoryText = `User ${user_id} captured media at ${timestamp}`;

@@ -1,6 +1,10 @@
 const axios = require('axios');
 const fs = require('fs').promises;
 const path = require('path');
+const { exec } = require('child_process');
+const { promisify } = require('util');
+
+const execAsync = promisify(exec);
 
 class ApertureDBClient {
   constructor() {
@@ -16,6 +20,19 @@ class ApertureDBClient {
       await fs.mkdir(this.storageDir, { recursive: true });
     } catch (error) {
       console.error('[Storage] Init error:', error.message);
+    }
+  }
+
+  async extractVideoFrame(videoPath) {
+    const framePath = videoPath.replace(/\.(mp4|mov|avi)$/i, '_frame.jpg');
+    try {
+      await execAsync(`ffmpeg -i "${videoPath}" -vframes 1 -f image2 "${framePath}" -y`);
+      const frameBuffer = await fs.readFile(framePath);
+      await fs.unlink(framePath); // Clean up
+      return frameBuffer;
+    } catch (error) {
+      console.error('[Video] Frame extraction failed:', error.message);
+      return null;
     }
   }
 
@@ -53,11 +70,13 @@ class ApertureDBClient {
     }
   }
 
-  async analyzeVideo(buffer) {
-    // For video, extract first frame and analyze it
-    // In production, you'd use Azure Video Indexer
-    console.log('[Vision] Video analysis: analyzing as image (first frame)');
-    return this.analyzeImage(buffer);
+  async analyzeVideo(videoPath) {
+    console.log('[Vision] Extracting frame from video...');
+    const frameBuffer = await this.extractVideoFrame(videoPath);
+    if (frameBuffer) {
+      return this.analyzeImage(frameBuffer);
+    }
+    return { description: 'Video analysis failed', tags: ['video'] };
   }
 
   async addImage(buffer, metadata) {
@@ -101,8 +120,8 @@ class ApertureDBClient {
       await fs.writeFile(filepath, buffer);
       console.log('[Storage] Video stored:', filepath);
       
-      // Analyze video (simplified - just analyze as image)
-      const analysis = await this.analyzeVideo(buffer);
+      // Extract frame and analyze
+      const analysis = await this.analyzeVideo(filepath);
       
       return { 
         id: mediaId,
