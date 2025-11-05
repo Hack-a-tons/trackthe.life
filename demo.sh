@@ -230,44 +230,28 @@ step_upload_image() {
   if [ "$EMULATE_ESP32" = true ]; then
     print_info "Simulating ESP32 camera capture and upload..."
     
-    # Create test image if doesn't exist
-    if [ ! -f "captures/test.jpg" ]; then
-      mkdir -p captures
-      print_info "Using sample from repo..."
-      
-      # Use samples from repo sample/ folder
-      SAMPLE_FILES=(sample/*.jpg sample/*.jpeg sample/*.png sample/*.mov sample/*.mp4)
-      AVAILABLE_SAMPLES=()
-      
-      for file in "${SAMPLE_FILES[@]}"; do
-        if [ -f "$file" ]; then
-          AVAILABLE_SAMPLES+=("$file")
-        fi
-      done
-      
-      if [ ${#AVAILABLE_SAMPLES[@]} -gt 0 ]; then
-        # Pick a random sample
-        RANDOM_INDEX=$((RANDOM % ${#AVAILABLE_SAMPLES[@]}))
-        SAMPLE_FILE="${AVAILABLE_SAMPLES[$RANDOM_INDEX]}"
-        cp "$SAMPLE_FILE" captures/test.jpg
-        print_verbose "Using: $(basename "$SAMPLE_FILE")"
-      else
-        # Fallback to captures directory
-        if [ -f "captures/sample1.jpg" ]; then
-          cp captures/sample1.jpg captures/test.jpg
-          print_verbose "Using: captures/sample1.jpg"
-        else
-          # Final fallback
-          print_info "No samples found, creating test image..."
-          if command -v convert &> /dev/null; then
-            convert -size 100x100 xc:blue captures/test.jpg 2>/dev/null || echo "Test" > captures/test.jpg
-          else
-            echo "Test image data" > captures/test.jpg
-          fi
-        fi
+    mkdir -p captures
+    
+    # Always use samples from repo sample/ folder
+    SAMPLE_FILES=(sample/*.jpg sample/*.jpeg sample/*.png sample/*.mov sample/*.mp4)
+    AVAILABLE_SAMPLES=()
+    
+    for file in "${SAMPLE_FILES[@]}"; do
+      if [ -f "$file" ]; then
+        AVAILABLE_SAMPLES+=("$file")
       fi
+    done
+    
+    if [ ${#AVAILABLE_SAMPLES[@]} -gt 0 ]; then
+      # Pick a random sample
+      RANDOM_INDEX=$((RANDOM % ${#AVAILABLE_SAMPLES[@]}))
+      SAMPLE_FILE="${AVAILABLE_SAMPLES[$RANDOM_INDEX]}"
+      IMAGE_FILE="$SAMPLE_FILE"
+      print_verbose "Selected: $(basename "$SAMPLE_FILE")"
+    else
+      print_error "No samples found in sample/ directory!"
+      exit 1
     fi
-    IMAGE_FILE="captures/test.jpg"
   else
     print_info "Fetching image from real ESP32 at $ESP32_URL..."
     mkdir -p captures
@@ -389,13 +373,31 @@ step_service_results() {
   echo ""
   
   # Query MemMachine for stored memories
-  echo -e "${YELLOW}📝 MemMachine Memories (last 3):${NC}"
+  echo -e "${YELLOW}📝 MemMachine Memories (last 10):${NC}"
   if command -v ssh &> /dev/null && [[ "$BACKEND_URL" == *"hurated.com"* ]]; then
-    ssh trackthelife.hurated.com 'curl -s -X POST http://localhost:7000/v1/memories/search \
+    MEMORIES=$(ssh trackthelife.hurated.com 'curl -s -X POST http://localhost:7000/v1/memories/search \
       -H "Content-Type: application/json" \
-      -d "{\"session\":{\"group_id\":\"trackthelife\",\"user_id\":[\"demo-user\"]},\"query\":\"recent\",\"limit\":3}"' 2>/dev/null | \
-      python3 -c "import sys,json; d=json.load(sys.stdin); [print(f'  • {m[\"content\"][:80]}...') for m in d.get('content',{}).get('episodic_memory',[[],[]])[1][:3]]" 2>/dev/null || \
-      echo "  ℹ️  See DEMO_RESULTS.md for MemMachine query examples"
+      -d "{\"session\":{\"group_id\":\"trackthelife\",\"user_id\":[\"demo-user\"]},\"query\":\"recent\",\"limit\":10}"' 2>/dev/null)
+    
+    if [ -n "$MEMORIES" ]; then
+      echo "$MEMORIES" | python3 -c "
+import sys, json
+try:
+    data = json.load(sys.stdin)
+    memories = data.get('content', {}).get('episodic_memory', [[],[]])[1]
+    if memories:
+        for i, m in enumerate(memories[:10], 1):
+            print(f'  {i}. {m[\"content\"]}')
+            print(f'     Time: {m[\"timestamp\"]}')
+            print()
+    else:
+        print('  No memories found')
+except Exception as e:
+    print(f'  Error: {e}')
+" 2>/dev/null || echo "  ℹ️  Unable to parse MemMachine response"
+    else
+      echo "  ℹ️  Unable to fetch memories"
+    fi
   else
     echo "  ℹ️  Local backend - query http://localhost:7000/v1/memories/search"
   fi
@@ -404,7 +406,7 @@ step_service_results() {
   # Show backend service logs
   echo -e "${YELLOW}📊 Backend Service Logs (last 10 lines):${NC}"
   if command -v ssh &> /dev/null && [[ "$BACKEND_URL" == *"hurated.com"* ]]; then
-    ssh trackthelife.hurated.com 'docker logs trackthelife-backend --tail 10 2>&1 | grep -E "\[Whisper\]|\[Comet\]|ApertureDB"' 2>/dev/null || \
+    ssh trackthelife.hurated.com 'docker logs trackthelife-backend --tail 10 2>&1 | grep -E "\[Whisper\]|\[Comet\]|\[Vision\]|\[Storage\]"' 2>/dev/null || \
       echo "  ℹ️  Unable to fetch remote logs"
   else
     echo "  ℹ️  Local backend - check: docker logs trackthelife-backend"
