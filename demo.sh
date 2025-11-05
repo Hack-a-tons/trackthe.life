@@ -66,10 +66,28 @@ EOF
       exit 0
       ;;
     -p*)
-      if [[ $1 =~ ^-p([0-9]+)$ ]]; then
+      # Handle -p, -p5, -pv, -vp, etc.
+      flag="$1"
+      # Extract pause value if present
+      if [[ $flag =~ -p([0-9]+) ]]; then
         PAUSE_SECONDS="${BASH_REMATCH[1]}"
-      else
-        PAUSE_SECONDS=-1  # Wait for keypress
+      elif [[ $flag == "-p" ]]; then
+        PAUSE_SECONDS=-1
+      fi
+      # Check for verbose flag
+      if [[ $flag == *v* ]]; then
+        VERBOSE=true
+      fi
+      ;;
+    -v*)
+      # Handle -v, -vp, -vp5, etc.
+      VERBOSE=true
+      flag="$1"
+      # Check for pause flag
+      if [[ $flag =~ -v.*p([0-9]+) ]]; then
+        PAUSE_SECONDS="${BASH_REMATCH[1]}"
+      elif [[ $flag == *p* ]]; then
+        PAUSE_SECONDS=-1
       fi
       ;;
     --pause)
@@ -80,7 +98,7 @@ EOF
         PAUSE_SECONDS=-1  # Wait for keypress
       fi
       ;;
-    -v|--verbose)
+    --verbose)
       VERBOSE=true
       ;;
     --emulate-esp32)
