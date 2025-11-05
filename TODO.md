@@ -63,35 +63,31 @@ This plan follows the order you specified.
 
 ---
 
-## 6. Fix ApertureDB (CURRENT - 2025-11-04)
-- [ ] Cloud instance down (502 Bad Gateway) - need alternative
-- [ ] Options:
-  - [ ] Contact ApertureData support
-  - [ ] Self-host ApertureDB locally
-  - [ ] Switch to alternative (S3 + local object detection)
-- [ ] Decision: Use mock data for now, implement real storage later
-- [ ] Update backend to store images in local filesystem
-- [ ] Add basic object detection with local model (optional)
+## 6. Fix ApertureDB
+- [x] Cloud instance down (502 Bad Gateway) - need alternative
+- [x] Decision: Use local file storage with mock detection
+- [x] Implemented local filesystem storage in uploads/ directory
+- [x] Images now stored successfully on each upload
+- [ ] TODO later: Add real object detection (TensorFlow.js or similar)
 
 ---
 
 ## 7. Integrate real ESP32 camera
-- [ ] Configure ESP32 with production Wi-Fi credentials
-- [ ] Test ESP32 camera capture endpoint
-- [ ] Run demo with `--esp32-url http://<esp32-ip>` flag
-- [ ] Verify real camera images flow through full pipeline
-- [ ] Test continuous capture mode
+- [x] Document ESP32 setup in ESP32_SETUP.md
+- [x] Demo script already supports --esp32-url flag
+- [ ] Physical ESP32 setup (when hardware available)
+- [ ] Test with real ESP32 camera
 
 ---
 
-## 7. Build clip generator for daily/weekly recaps
+## 8. Build clip generator for daily/weekly recaps (CURRENT - 2025-11-04)
 - [ ] Add Node.js script `scripts/build_daily_clip.js`:
-    - query ApertureDB for media in last 24h
+    - query MemMachine for media in last 24h
     - rank by: has people, has speech, is moving, has known location
     - produce JSON EDL
     - run FFmpeg to stitch
 - [ ] Add `scripts/build_weekly_clip.js` that just stitches daily ones
-- [ ] Store produced clips back in ApertureDB / S3
+- [ ] Store produced clips in uploads/ directory
 - [ ] Log clip building runs to Comet/Opik for quality comparison
 
 ---
