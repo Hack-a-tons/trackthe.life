@@ -261,6 +261,28 @@ step_upload_image() {
     fi
   fi
   
+  # Display image info and open in viewer
+  if [ -f "$IMAGE_FILE" ]; then
+    echo ""
+    echo "📷 Image: $(pwd)/$IMAGE_FILE"
+    
+    # Show image info
+    if command -v file &> /dev/null; then
+      file "$IMAGE_FILE"
+    fi
+    ls -lh "$IMAGE_FILE"
+    
+    # Try to open image in default viewer
+    if command -v open &> /dev/null; then
+      open "$IMAGE_FILE" 2>/dev/null &
+      echo "   Opened in Preview"
+    elif command -v xdg-open &> /dev/null; then
+      xdg-open "$IMAGE_FILE" 2>/dev/null &
+      echo "   Opened in default viewer"
+    fi
+    echo ""
+  fi
+  
   print_info "Uploading image to backend..."
   print_verbose "File: $IMAGE_FILE"
   print_verbose "User: demo-user"
