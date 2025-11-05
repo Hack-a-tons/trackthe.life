@@ -51,7 +51,7 @@ This plan follows the order you specified.
 
 ---
 
-## 5. Run demo and review actual results (CURRENT - 2025-11-04)
+## 5. Run demo and review actual results
 - [x] Execute `./demo.sh -v all` to run full workflow
 - [x] Review ApertureDB results: object detection, image storage, metadata
 - [x] Review MemMachine context: episodic memories, user profile
@@ -59,10 +59,23 @@ This plan follows the order you specified.
 - [x] Review Comet stats: traces, metrics, pipeline performance
 - [x] Document findings and verify all integrations working
 - [x] Fix Telnyx/Whisper: Switched to Azure OpenAI Whisper (working)
+- [x] Enhanced demo to show actual service outputs
 
 ---
 
-## 6. Integrate real ESP32 camera
+## 6. Fix ApertureDB (CURRENT - 2025-11-04)
+- [ ] Cloud instance down (502 Bad Gateway) - need alternative
+- [ ] Options:
+  - [ ] Contact ApertureData support
+  - [ ] Self-host ApertureDB locally
+  - [ ] Switch to alternative (S3 + local object detection)
+- [ ] Decision: Use mock data for now, implement real storage later
+- [ ] Update backend to store images in local filesystem
+- [ ] Add basic object detection with local model (optional)
+
+---
+
+## 7. Integrate real ESP32 camera
 - [ ] Configure ESP32 with production Wi-Fi credentials
 - [ ] Test ESP32 camera capture endpoint
 - [ ] Run demo with `--esp32-url http://<esp32-ip>` flag
