@@ -21,6 +21,8 @@ fi
 # Default settings
 PAUSE_SECONDS=0
 VERBOSE=false
+EMULATE_ESP32=true
+ESP32_URL=""
 BACKEND_URL="${BACKEND_URL:-$DEFAULT_BACKEND_URL}"
 
 # Parse arguments
@@ -38,6 +40,8 @@ OPTIONS:
   -p, --pause [SECONDS]   Pause after each step (default: wait for keypress)
                           Examples: -p (wait for key), -p5 (5 sec), --pause 30
   -v, --verbose           Show raw curl requests and full JSON responses
+  --emulate-esp32         Use simulated ESP32 images (default)
+  --esp32-url URL         Use real ESP32 camera at URL (e.g., http://192.168.1.100)
 
 STEPS (run individually or 'all' for full demo):
   all                     Run complete demo workflow
@@ -78,6 +82,14 @@ EOF
       ;;
     -v|--verbose)
       VERBOSE=true
+      ;;
+    --emulate-esp32)
+      EMULATE_ESP32=true
+      ;;
+    --esp32-url)
+      EMULATE_ESP32=false
+      ESP32_URL="$2"
+      shift
       ;;
     *)
       STEPS+=("$1")
@@ -167,27 +179,41 @@ step_health() {
 
 step_upload_image() {
   print_step "Step 2: Upload Image from ESP32 Camera"
-  print_info "Simulating ESP32 camera capture and upload..."
   
-  # Create test image if doesn't exist
-  if [ ! -f "captures/test.jpg" ]; then
+  if [ "$EMULATE_ESP32" = true ]; then
+    print_info "Simulating ESP32 camera capture and upload..."
+    
+    # Create test image if doesn't exist
+    if [ ! -f "captures/test.jpg" ]; then
+      mkdir -p captures
+      print_info "Creating test image..."
+      # Create a simple colored square as test image
+      if command -v convert &> /dev/null; then
+        convert -size 100x100 xc:blue captures/test.jpg 2>/dev/null || echo "Test" > captures/test.jpg
+      else
+        echo "Test image data" > captures/test.jpg
+      fi
+    fi
+    IMAGE_FILE="captures/test.jpg"
+  else
+    print_info "Fetching image from real ESP32 at $ESP32_URL..."
     mkdir -p captures
-    print_info "Creating test image..."
-    # Create a simple colored square as test image
-    if command -v convert &> /dev/null; then
-      convert -size 100x100 xc:blue captures/test.jpg 2>/dev/null || echo "Test" > captures/test.jpg
+    if curl -s -o captures/esp32_capture.jpg "$ESP32_URL/capture" 2>/dev/null; then
+      IMAGE_FILE="captures/esp32_capture.jpg"
+      print_success "Image captured from ESP32"
     else
-      echo "Test image data" > captures/test.jpg
+      print_error "Failed to capture from ESP32, falling back to test image"
+      IMAGE_FILE="captures/test.jpg"
     fi
   fi
   
   print_info "Uploading image to backend..."
-  print_verbose "File: captures/test.jpg"
+  print_verbose "File: $IMAGE_FILE"
   print_verbose "User: demo-user"
   print_verbose "Timestamp: $(date -Iseconds)"
   
   response=$(curl -s -X POST "${BACKEND_URL}/api/media" \
-    -F "file=@captures/test.jpg" \
+    -F "file=@$IMAGE_FILE" \
     -F "user_id=demo-user" \
     -F "timestamp=$(date -Iseconds)" \
     -F "location=37.7749,-122.4194")
