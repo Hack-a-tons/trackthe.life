@@ -17,10 +17,7 @@ sed -e "s|\${POSTGRES_USER}|$POSTGRES_USER|g" \
     -e "s|\${NEO4J_PORT}|$NEO4J_PORT|g" \
     -e "s|\${NEO4J_USER}|$NEO4J_USER|g" \
     -e "s|\${NEO4J_PASSWORD}|$NEO4J_PASSWORD|g" \
-    -e "s|\${AZURE_OPENAI_DEPLOYMENT}|$AZURE_OPENAI_DEPLOYMENT|g" \
-    -e "s|\${AZURE_OPENAI_API_KEY}|$AZURE_OPENAI_API_KEY|g" \
-    -e "s|\${AZURE_OPENAI_ENDPOINT}|$AZURE_OPENAI_ENDPOINT|g" \
-    -e "s|\${AZURE_OPENAI_API_VERSION}|$AZURE_OPENAI_API_VERSION|g" \
+    -e "s|\${OPENAI_API_KEY}|$OPENAI_API_KEY|g" \
     /app/cfg.yml.template > /app/cfg.yml
 
 echo "cfg.yml generated successfully"
