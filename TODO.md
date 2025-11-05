@@ -80,29 +80,26 @@ This plan follows the order you specified.
 
 ---
 
-## 8. Build clip generator for daily/weekly recaps (CURRENT - 2025-11-04)
-- [ ] Add Node.js script `scripts/build_daily_clip.js`:
-    - query MemMachine for media in last 24h
-    - rank by: has people, has speech, is moving, has known location
-    - produce JSON EDL
-    - run FFmpeg to stitch
-- [ ] Add `scripts/build_weekly_clip.js` that just stitches daily ones
-- [ ] Store produced clips in uploads/ directory
-- [ ] Log clip building runs to Comet/Opik for quality comparison
+## 8. Build clip generator for daily/weekly recaps
+- [x] Add Node.js script scripts/build_daily_clip.js
+- [x] Find images from last 24h
+- [x] Use FFmpeg to stitch clips
+- [x] Store output clip in clips/ directory
+- [x] Test with existing captured images
+- [x] Add ffmpeg to Docker container
+- [ ] Add weekly clip generator (stitches daily clips)
+- [ ] Integrate with MemMachine for event ranking
 
 ---
 
-## 8. Make Flutter app to visualize everything
-- [ ] Flutter project `trackthelife_app`
+## 9. Make Flutter app to visualize everything (CURRENT - 2025-11-04)
+- [ ] Flutter project trackthelife_app
 - [ ] Screens:
     - [ ] Login / choose user
-    - [ ] “Timeline” — list uploads (thumbnail, time, location, labels)
+    - [ ] Timeline — list uploads (thumbnail, time, location, labels)
     - [ ] Detail page — video player + transcript
 - [ ] REST calls to Node.js to list media + transcripts
 - [ ] Map widget (later) to show GPS from phone
-
----
-
 ## 6. Create the part which will produce clips etc.
 - [ ] Add Node.js script `scripts/build_daily_clip.js`:
     - query ApertureDB for media in last 24h
