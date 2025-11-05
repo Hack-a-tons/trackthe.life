@@ -5,7 +5,7 @@ logging:
 long_term_memory:
   derivative_deriver: sentence
   metadata_prefix: "[TIMESTAMP] PRODUCER_ID: "
-  embedder: openai_embedder
+  embedder: azure_embedder
   reranker: identity_reranker
   vector_graph_store: neo4j_storage
 
@@ -13,10 +13,12 @@ SessionDB:
   uri: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
 
 Model:
-  openai_model:
-    model_vendor: openai
-    model: gpt-4o-mini
-    api_key: ${OPENAI_API_KEY}
+  azure_model:
+    model_vendor: openai-compatible
+    model: ${AZURE_OPENAI_DEPLOYMENT}
+    api_key: ${AZURE_OPENAI_API_KEY}
+    base_url: ${AZURE_OPENAI_ENDPOINT}/openai/deployments/${AZURE_OPENAI_DEPLOYMENT}
+    api_version: ${AZURE_OPENAI_API_VERSION}
 
 storage:
   neo4j_storage:
@@ -35,23 +37,25 @@ storage:
     password: ${POSTGRES_PASSWORD}
 
 profile_memory:
-  llm_model: openai_model
-  embedding_model: openai_embedder
+  llm_model: azure_model
+  embedding_model: azure_embedder
   database: postgres_storage
   prompt: profile_prompt
 
 sessionMemory:
-  model_name: openai_model
+  model_name: azure_model
   message_capacity: 500
   max_message_length: 16000
   max_token_num: 8000
 
 embedder:
-  openai_embedder:
-    name: openai
+  azure_embedder:
+    name: openai-compatible
     config:
       model: text-embedding-3-small
-      api_key: ${OPENAI_API_KEY}
+      api_key: ${AZURE_OPENAI_API_KEY}
+      base_url: ${AZURE_OPENAI_ENDPOINT}/openai/deployments/text-embedding-3-small
+      api_version: ${AZURE_OPENAI_API_VERSION}
 
 reranker:
   identity_reranker:
