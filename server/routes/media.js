@@ -37,8 +37,11 @@ router.post('/media', upload.single('file'), async (req, res) => {
     
     const apertureResult = await aperturedb.addImage(req.file.buffer, metadata);
     
-    // Build memory text with location info
+    // Build memory text with location info and description
     let memoryText = `User ${user_id} captured media at ${timestamp}`;
+    if (apertureResult.description) {
+      memoryText += `: "${apertureResult.description}"`;
+    }
     if (location) {
       memoryText += ` at GPS location ${location}`;
     }

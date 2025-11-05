@@ -190,21 +190,52 @@ step_show_samples() {
   for file in "${SAMPLE_FILES[@]}"; do
     if [ -f "$file" ]; then
       echo "  📁 $(basename "$file")"
-      if command -v open &> /dev/null; then
-        open "$file" 2>/dev/null &
-        OPENED_COUNT=$((OPENED_COUNT + 1))
+      
+      # If pause is enabled, open and analyze each file individually
+      if [ "$PAUSE_SECONDS" != "0" ]; then
+        echo ""
+        echo "  Opening: $file"
+        
+        if command -v open &> /dev/null; then
+          open "$file" 2>/dev/null
+        fi
+        
+        # Upload and get description
+        print_info "Analyzing..."
+        response=$(curl -s -X POST "${BACKEND_URL}/api/media" \
+          -F "file=@$file" \
+          -F "user_id=demo-user" \
+          -F "timestamp=$(date -Iseconds)" \
+          -F "latitude=37.7749" \
+          -F "longitude=-122.4194" 2>/dev/null)
+        
+        description=$(echo "$response" | grep -o '"description":"[^"]*"' | cut -d'"' -f4)
+        if [ -n "$description" ]; then
+          echo "  📝 Description: $description"
+        fi
+        echo ""
+        
+        pause_step
+      else
+        # Just open all at once
+        if command -v open &> /dev/null; then
+          open "$file" 2>/dev/null &
+        fi
       fi
+      
+      OPENED_COUNT=$((OPENED_COUNT + 1))
     fi
   done
   
-  if [ $OPENED_COUNT -gt 0 ]; then
+  if [ $OPENED_COUNT -gt 0 ] && [ "$PAUSE_SECONDS" = "0" ]; then
     echo ""
     print_success "Opened $OPENED_COUNT sample files in Preview"
+    pause_step
+  elif [ $OPENED_COUNT -gt 0 ]; then
+    print_success "Analyzed $OPENED_COUNT sample files"
   else
     print_info "No sample files found in sample/ directory"
   fi
-  
-  pause_step
 }
 
 step_health() {
@@ -386,7 +417,8 @@ try:
     data = json.load(sys.stdin)
     memories = data.get('content', {}).get('episodic_memory', [[],[]])[1]
     if memories:
-        for i, m in enumerate(memories[:10], 1):
+        # Reverse to show latest first
+        for i, m in enumerate(reversed(memories[:10]), 1):
             print(f'  {i}. {m[\"content\"]}')
             print(f'     Time: {m[\"timestamp\"]}')
             print()
