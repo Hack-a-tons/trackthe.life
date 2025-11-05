@@ -52,9 +52,9 @@ embedder:
   azure_embedder:
     name: openai
     config:
-      model: text-embedding-3-small
+      model: text-embedding-3-large
       api_key: ${AZURE_OPENAI_API_KEY}
-      base_url: ${AZURE_OPENAI_ENDPOINT}/openai/deployments/text-embedding-3-small
+      base_url: ${AZURE_OPENAI_ENDPOINT}/openai/deployments/text-embedding-3-large
       api_version: ${AZURE_OPENAI_API_VERSION}
 
 reranker:
