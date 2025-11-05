@@ -184,7 +184,10 @@ step_show_samples() {
   echo ""
   
   # Find all sample files
-  SAMPLE_FILES=(sample/*.jpg sample/*.jpeg sample/*.png sample/*.mov sample/*.mp4)
+  SAMPLE_FILES=()
+  shopt -s nullglob
+  SAMPLE_FILES+=(sample/*.jpg sample/*.jpeg sample/*.png sample/*.mov sample/*.mp4)
+  shopt -u nullglob
   OPENED_COUNT=0
   
   for file in "${SAMPLE_FILES[@]}"; do

@@ -4,6 +4,7 @@ const aperturedb = require('../services/aperturedbClient');
 const memmachine = require('../services/memmachineClient');
 const comet = require('../services/cometClient');
 const geoip = require('../services/geoipClient');
+const whisper = require('../services/telnyxClient');
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -43,10 +44,20 @@ router.post('/media', upload.single('file'), async (req, res) => {
       ? await aperturedb.addVideo(req.file.buffer, metadata)
       : await aperturedb.addImage(req.file.buffer, metadata);
     
-    // Build memory text with location info and description
-    let memoryText = `User ${user_id} captured media at ${timestamp}`;
+    // Transcribe video audio if available
+    let transcription = null;
+    if (isVideo && apertureResult.audioBuffer) {
+      console.log('[Media] Transcribing video audio...');
+      transcription = await whisper.transcribe(apertureResult.audioBuffer, 'video_audio.wav');
+    }
+    
+    // Build memory text with location info, description, and transcription
+    let memoryText = `User ${user_id} captured ${isVideo ? 'video' : 'image'} at ${timestamp}`;
     if (apertureResult.description) {
       memoryText += `: "${apertureResult.description}"`;
+    }
+    if (transcription?.text) {
+      memoryText += `. Audio: "${transcription.text}"`;
     }
     if (location) {
       memoryText += ` at GPS location ${location}`;
@@ -62,7 +73,9 @@ router.post('/media', upload.single('file'), async (req, res) => {
       media_id: apertureResult.id,
       user_id,
       has_gps: !!location,
-      has_ip_location: !!ipLocation
+      has_ip_location: !!ipLocation,
+      has_transcription: !!transcription,
+      is_video: isVideo
     });
 
     res.json({
@@ -71,6 +84,9 @@ router.post('/media', upload.single('file'), async (req, res) => {
       description: apertureResult.description,
       labels: apertureResult.labels || [],
       confidence: apertureResult.confidence,
+      transcription: transcription?.text,
+      faces: apertureResult.faces,
+      objects: apertureResult.objects,
       location: location || (ipLocation ? `${ipLocation.lat},${ipLocation.lon}` : null),
       ipLocation: ipLocation ? {
         city: ipLocation.city,

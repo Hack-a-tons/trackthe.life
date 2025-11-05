@@ -1,312 +1,218 @@
-# Cloud Services Setup
+# Service Usage Summary
 
-This guide explains how to set up cloud services for trackthe.life. All services offer cloud/hosted options, so you don't need to run them locally.
+## ✅ ACTIVE SERVICES
 
----
+### MemMachine
+**Status:** ✅ ACTIVE  
+**Purpose:** Episodic memory storage and retrieval  
+**Usage:**
+- Stores every media upload as a memory with full context
+- Memory format: `"User {user_id} captured {image/video} at {timestamp}: '{description}'. Audio: '{transcription}' at GPS location {coords} from {city}, {region}, {country}"`
+- Links visual analysis + audio transcription + location in single memory
+- Enables semantic search across all captured moments
+- Used in: `/api/media` (write), `/api/memories` (read)
 
-## 1. ApertureDB (Multimodal Database)
-
-### Cloud Service ✅ Recommended
-
-**Website**: https://aperturedata.io
-
-**Features**:
-- Multimodal data storage (images, video, embeddings)
-- Built-in object detection and recognition
-- Face detection and tracking
-- Scene understanding
-- Vector similarity search
-- Metadata queries
-
-**Setup**:
-1. Sign up at https://aperturedata.io
-2. Create a new database instance
-3. Get credentials from dashboard:
-   - **Host Name** (e.g., `your-instance.farm0004.cloud.aperturedata.io`)
-   - **Auth Token** (starts with `adbp_`)
-4. Update `.env`:
-   ```bash
-   APERTUREDB_URL=your-instance.farm0004.cloud.aperturedata.io
-   APERTUREDB_API_KEY=adbp_your_auth_token_here
-   ```
-
-**Note**: Don't include `https://` in the URL - the client adds it automatically.
-
-**Recognition Scenarios**:
-- Object detection (people, cars, objects)
-- Face recognition and tracking
-- Scene classification (indoor/outdoor, location type)
-- Activity recognition
-- Custom model integration
-
-**Alternative: Self-Hosted**
-```bash
-docker run -p 5555:5555 aperturedata/aperturedb:latest
-APERTUREDB_URL=http://localhost:5555
-```
-
----
-
-## 2. MemMachine (Memory Layer)
-
-### Docker Service ✅ Recommended
-
-**Included in docker-compose stack**
-
-MemMachine runs as part of the trackthe.life Docker Compose setup with PostgreSQL and Neo4j backends.
-
-**Features**:
-- Episodic memory storage
-- Semantic memory extraction
-- Context-aware retrieval
-- User profile building
-- Cross-session memory
-
-**Setup**:
-1. Get API key (choose one):
-   - **OpenAI**: https://platform.openai.com/api-keys
-   - **Azure OpenAI**: https://portal.azure.com (recommended for enterprise)
-2. Update `.env`:
-   
-   **Option A: OpenAI**
-   ```bash
-   OPENAI_API_KEY=sk-your_key_here
-   ```
-   
-   **Option B: Azure OpenAI** (recommended)
-   ```bash
-   AZURE_OPENAI_API_KEY=your_azure_key
-   AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
-   AZURE_OPENAI_DEPLOYMENT=gpt-4
-   AZURE_OPENAI_API_VERSION=2024-02-15-preview
-   ```
-
-3. Set other MemMachine variables:
-   ```bash
-   MEMMACHINE_PORT=7000
-   MEMMACHINE_URL=http://localhost:7000
-   MEMMACHINE_DB_PASSWORD=secure_password
-   MEMMACHINE_NEO4J_PASSWORD=secure_password
-   ```
-
-4. Start services:
-   ```bash
-   docker compose up -d
-   ```
-
-**Services included**:
-- MemMachine API (port 7000)
-- PostgreSQL with pgvector
-- Neo4j graph database
-
-**API Endpoint**: `http://localhost:7000/v1/memories`
-
-**Note**: MemMachine requires OpenAI or Azure OpenAI API key for embeddings and language models. Tokens are consumed during usage. Azure OpenAI is recommended for enterprise deployments with better compliance and regional availability.
-
----
-
-## 3. Telnyx (Speech-to-Text)
-
-### Cloud Service ✅ Only Option
-
-**Website**: https://portal.telnyx.com
-
-**Features**:
-- OpenAI-compatible API
-- Multiple Whisper models
-- Timestamps per word
-- Multiple languages
-- High accuracy
-
-**Setup**:
-1. Sign up at https://portal.telnyx.com
-2. Go to API Keys section
-3. Create new API key
-4. Update `.env`:
-   ```bash
-   TELNYX_API_KEY=KEY...your_key_here
-   ```
-
-**API Endpoint**: `https://api.telnyx.com/v2/ai/audio/transcriptions`
-
-**Models Available**:
-- `whisper-large-v3` (best quality)
-- `whisper-medium`
-- `whisper-small` (fastest)
-
----
-
-## 4. Comet/Opik (Experiment Tracking)
-
-### Cloud Service ✅ Recommended
-
-**Website**: https://www.comet.com
-
-**Features**:
-- LLM trace logging
-- Experiment tracking
-- Model evaluation
-- Performance metrics
-- Team collaboration
-
-**Setup**:
-1. Sign up at https://www.comet.com
-2. Create workspace
-3. Get API key from Settings → API Keys
-4. Update `.env`:
-   ```bash
-   COMET_API_KEY=your_key_here
-   COMET_WORKSPACE=trackthelife
-   ```
-
----
-
-## Configuration Summary
-
-### Recommended (All Cloud)
-
-```bash
-# .env
-PORT=4000
-EXTERNAL_PORT=6000
-PUBLIC_URL=https://trackthelife.hurated.com
-
-# ApertureDB (cloud)
-APERTUREDB_URL=your-instance.farm0004.cloud.aperturedata.io
-APERTUREDB_API_KEY=adbp_your_auth_token
-
-# Telnyx (cloud)
-TELNYX_API_KEY=your_key
-
-# MemMachine (Docker service)
-MEMMACHINE_PORT=7000
-MEMMACHINE_URL=http://localhost:7000
-MEMMACHINE_DB_PASSWORD=secure_password
-MEMMACHINE_NEO4J_PASSWORD=secure_password
-
-# Option 1: OpenAI
-OPENAI_API_KEY=sk-your_key
-
-# Option 2: Azure OpenAI (recommended)
-AZURE_OPENAI_API_KEY=your_azure_key
-AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
-AZURE_OPENAI_DEPLOYMENT=gpt-4
-AZURE_OPENAI_API_VERSION=2024-02-15-preview
-
-# Comet (cloud)
-COMET_API_KEY=your_key
-COMET_WORKSPACE=trackthelife
-```
-
-### Hybrid (Some Local)
-
-```bash
-# Local ApertureDB and MemMachine for development
-APERTUREDB_URL=http://localhost:5555
+**Configuration:**
+```env
 MEMMACHINE_URL=http://localhost:7860
-
-# Cloud for Telnyx and Comet
-TELNYX_API_KEY=your_key
-COMET_API_KEY=your_key
+MEMMACHINE_API_KEY=changeme
 ```
 
----
+### Azure Computer Vision
+**Status:** ✅ ACTIVE (replacing ApertureDB)  
+**Purpose:** Image and video frame analysis  
+**Usage:**
+- Analyzes images for: description, tags, objects, faces, categories, colors
+- Extracts first frame from videos for visual analysis
+- Provides detailed descriptions: "a person riding a skateboard. 1 person detected. Objects: person (95%), skateboard (87%). Colors: black, gray, white"
+- Returns confidence scores and bounding boxes
+- Used in: `aperturedbClient.js` (analyzeImage, analyzeVideo)
 
-## ApertureDB Recognition Scenarios
-
-### 1. Object Detection
-```javascript
-// Automatically detects objects in images
-// Returns: ["person", "car", "tree", "building"]
+**Configuration:**
+```env
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+AZURE_OPENAI_API_KEY=your-key
 ```
 
-### 2. Face Recognition
-```javascript
-// Detects and tracks faces across frames
-// Can identify known people
-// Returns: face bounding boxes, embeddings
+**API Endpoint:**
+```
+POST {endpoint}/vision/v3.2/analyze?visualFeatures=Description,Tags,Objects,Faces,Categories,Color,ImageType&details=Celebrities,Landmarks
 ```
 
-### 3. Scene Understanding
-```javascript
-// Classifies scene type
-// Returns: "indoor", "outdoor", "office", "street", etc.
+### Azure OpenAI Whisper
+**Status:** ✅ ACTIVE (replacing Telnyx)  
+**Purpose:** Audio transcription from uploaded audio files and video soundtracks  
+**Usage:**
+- Transcribes audio files uploaded via `/api/audio`
+- Extracts and transcribes audio from video files automatically
+- Returns text + timestamps for semantic search
+- Links transcription to visual analysis in MemMachine
+- Used in: `telnyxClient.js` (transcribe), `media.js` (video audio)
+
+**Configuration:**
+```env
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+AZURE_OPENAI_API_KEY=your-key
 ```
 
-### 4. Activity Recognition
-```javascript
-// Detects activities from video
-// Returns: "walking", "sitting", "talking", etc.
+**API Endpoint:**
+```
+POST {endpoint}/openai/deployments/whisper/audio/transcriptions?api-version=2024-02-01
 ```
 
-### 5. Custom Queries
-```javascript
-// Find all frames with:
-// - Specific person
-// - At specific location
-// - With certain objects
-// - During time range
+### Comet / Opik
+**Status:** ✅ ACTIVE  
+**Purpose:** Experiment tracking and LLM observability  
+**Usage:**
+- Logs every media upload with metadata: duration, media_id, user_id, has_gps, has_ip_location, has_transcription, is_video
+- Tracks API performance and success rates
+- Enables A/B testing of different AI models
+- Used in: `cometClient.js`, all route handlers
+
+**Configuration:**
+```env
+COMET_API_KEY=your-key
+COMET_WORKSPACE=your-workspace
 ```
 
----
+### IP Geolocation (ip-api.com)
+**Status:** ✅ ACTIVE  
+**Purpose:** Fallback location when GPS unavailable  
+**Usage:**
+- Looks up client IP to get city, region, country, lat/lon
+- Used when mobile app doesn't provide GPS coordinates
+- Free tier: 45 requests/minute
+- Used in: `geoipClient.js`, `media.js`
 
-## Cost Considerations
+**API Endpoint:**
+```
+GET http://ip-api.com/json/{ip}
+```
 
-### Free Tiers (as of 2024)
+### FFmpeg
+**Status:** ✅ ACTIVE  
+**Purpose:** Video processing  
+**Usage:**
+- Extracts first frame from videos for visual analysis
+- Extracts audio track from videos for transcription
+- Converts video formats if needed
+- Used in: `aperturedbClient.js` (extractVideoFrame, extractVideoAudio)
 
-**ApertureDB**: Contact for pricing, may have free tier for hackathons  
-**MemMachine**: Free tier available for personal projects  
-**Telnyx**: Pay-as-you-go, ~$0.006/minute of audio  
-**Comet**: Free tier: 5,000 experiments/month
-
-### Estimated Monthly Cost (Light Usage)
-
-- **ApertureDB**: $0-50 (depending on storage/queries)
-- **MemMachine**: $0-20 (free tier likely sufficient)
-- **Telnyx**: $5-20 (assuming 1-2 hours audio/day)
-- **Comet**: $0 (free tier)
-
-**Total**: ~$5-90/month depending on usage
-
----
-
-## Local Development Setup
-
-For offline development, use docker-compose:
-
+**Commands:**
 ```bash
-# Start local services
-docker compose -f docker-compose.dev.yml up -d
+# Extract frame
+ffmpeg -i video.mp4 -vframes 1 -f image2 frame.jpg -y
 
-# This starts:
-# - ApertureDB on localhost:5555
-# - MemMachine on localhost:7860
+# Extract audio
+ffmpeg -i video.mp4 -vn -acodec pcm_s16le -ar 16000 -ac 1 audio.wav -y
 ```
 
-Update `.env` to use localhost URLs.
+---
+
+## ❌ NOT USED / REPLACED
+
+### ApertureDB
+**Status:** ❌ REPLACED by Azure Computer Vision  
+**Reason:** Cloud instance API down (502 Bad Gateway), web UI works but backend unavailable  
+**Original Purpose:** Multimodal database for images, videos, embeddings, and metadata  
+**Replacement:** Azure Computer Vision for analysis + local file storage in `/app/uploads/`
+
+**What we lost:**
+- Vector similarity search across images
+- Built-in object detection and tracking
+- Temporal queries across video segments
+
+**What we gained:**
+- More detailed natural language descriptions
+- Face detection with demographics
+- Celebrity and landmark recognition
+- Color analysis
+- Higher reliability (Azure SLA)
+
+### Telnyx
+**Status:** ❌ REPLACED by Azure OpenAI Whisper  
+**Reason:** Model `whisper-large-v3` doesn't exist in Telnyx API  
+**Original Purpose:** Audio transcription via OpenAI-compatible endpoint  
+**Replacement:** Azure OpenAI Whisper deployment
+
+**What we lost:**
+- Nothing significant
+
+**What we gained:**
+- Same Whisper model, better integration
+- Already had Azure credentials configured
+- More reliable API
 
 ---
 
-## Next Steps
+## Architecture Flow
 
-1. **Sign up for services** (start with free tiers)
-2. **Get API keys** from each dashboard
-3. **Update `.env`** with real credentials
-4. **Test connection**:
-   ```bash
-   npm start
-   curl http://localhost:4000/api/health
-   ```
-5. **Deploy to production**:
-   ```bash
-   ./deploy.sh
-   ```
+```
+┌─────────────────┐
+│  ESP32 Camera   │
+│  Flutter App    │
+└────────┬────────┘
+         │ POST /api/media
+         ▼
+┌─────────────────────────────────────────────────────────┐
+│                    Node.js Backend                       │
+│                                                          │
+│  1. Receive file (image/video)                          │
+│  2. Get IP → ip-api.com → location fallback             │
+│  3. Store file → /app/uploads/                          │
+│  4. If video:                                           │
+│     a. FFmpeg extract frame → Azure Computer Vision     │
+│     b. FFmpeg extract audio → Azure Whisper             │
+│  5. If image:                                           │
+│     a. Azure Computer Vision → detailed description     │
+│  6. Build memory text:                                  │
+│     "User X captured video: 'description'. Audio:       │
+│      'transcription' at location Y"                     │
+│  7. MemMachine.addMemory() → store episodic memory      │
+│  8. Comet.logTrace() → track metrics                    │
+│  9. Return JSON with description, transcription, etc.   │
+└─────────────────────────────────────────────────────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Flutter App    │
+│  Display results│
+└─────────────────┘
+```
 
 ---
 
-## Support
+## Cost Analysis
 
-- **ApertureDB**: https://docs.aperturedata.io
-- **MemMachine**: https://github.com/MemMachine/MemMachine/issues
-- **Telnyx**: https://developers.telnyx.com
-- **Comet**: https://www.comet.com/docs
+| Service | Tier | Cost | Usage |
+|---------|------|------|-------|
+| MemMachine | Cloud | Free beta | ~100 memories/day |
+| Azure Computer Vision | Standard | $1/1000 calls | ~50 images/day = $0.05/day |
+| Azure OpenAI Whisper | Standard | $0.006/min | ~10 min/day = $0.06/day |
+| Comet | Free | $0 | Unlimited traces |
+| ip-api.com | Free | $0 | <45 req/min |
+| FFmpeg | Open source | $0 | Local processing |
+
+**Total:** ~$3.30/month for 50 media uploads/day
+
+---
+
+## Future Considerations
+
+### If ApertureDB comes back online:
+- Could use for vector similarity search: "find all images similar to this one"
+- Temporal queries: "show me all videos from last Tuesday"
+- Object tracking across video frames
+- Spatial queries: "find all images within 1km of this location"
+
+### If we need more scale:
+- Azure Cognitive Services batch processing
+- S3 for media storage instead of local disk
+- Redis for caching analysis results
+- PostgreSQL for structured metadata
+
+### If we add more AI features:
+- Azure Custom Vision for person recognition
+- Azure Speech for real-time transcription
+- GPT-4 Vision for complex scene understanding
+- Ollama for local LLM processing (privacy mode)

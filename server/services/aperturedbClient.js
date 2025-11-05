@@ -36,6 +36,19 @@ class ApertureDBClient {
     }
   }
 
+  async extractVideoAudio(videoPath) {
+    const audioPath = videoPath.replace(/\.(mp4|mov|avi)$/i, '.wav');
+    try {
+      await execAsync(`ffmpeg -i "${videoPath}" -vn -acodec pcm_s16le -ar 16000 -ac 1 "${audioPath}" -y`);
+      const audioBuffer = await fs.readFile(audioPath);
+      await fs.unlink(audioPath); // Clean up
+      return audioBuffer;
+    } catch (error) {
+      console.error('[Video] Audio extraction failed:', error.message);
+      return null;
+    }
+  }
+
   async analyzeImage(buffer) {
     if (!this.azureEndpoint || !this.azureKey) {
       console.log('[Vision] Azure not configured, using mock data');
@@ -43,7 +56,7 @@ class ApertureDBClient {
     }
 
     try {
-      const url = `${this.azureEndpoint}/vision/v3.2/analyze?visualFeatures=Description,Tags,Objects`;
+      const url = `${this.azureEndpoint}/vision/v3.2/analyze?visualFeatures=Description,Tags,Objects,Faces,Categories,Color,ImageType&details=Celebrities,Landmarks`;
       
       const response = await axios.post(url, buffer, {
         headers: {
@@ -53,16 +66,28 @@ class ApertureDBClient {
         timeout: 15000
       });
 
-      const description = response.data.description?.captions?.[0]?.text || 'No description';
-      const tags = response.data.tags?.map(t => t.name).slice(0, 5) || [];
-      const objects = response.data.objects?.map(o => o.object) || [];
+      const caption = response.data.description?.captions?.[0]?.text || 'No description';
+      const tags = response.data.tags?.map(t => t.name).slice(0, 10) || [];
+      const objects = response.data.objects?.map(o => `${o.object} (${Math.round(o.confidence * 100)}%)`).slice(0, 5) || [];
+      const faces = response.data.faces?.length || 0;
+      const categories = response.data.categories?.map(c => c.name).slice(0, 3) || [];
+      const colors = response.data.color?.dominantColors?.slice(0, 3) || [];
 
-      console.log('[Vision] Analysis successful:', { description, tags: tags.length, objects: objects.length });
+      // Build detailed description
+      let detailedDesc = caption;
+      if (faces > 0) detailedDesc += `. ${faces} person${faces > 1 ? 's' : ''} detected`;
+      if (objects.length > 0) detailedDesc += `. Objects: ${objects.join(', ')}`;
+      if (colors.length > 0) detailedDesc += `. Colors: ${colors.join(', ')}`;
+
+      console.log('[Vision] Analysis successful:', { description: detailedDesc, tags: tags.length, faces, objects: objects.length });
       
       return {
-        description,
-        tags: [...new Set([...tags, ...objects])],
-        confidence: response.data.description?.captions?.[0]?.confidence
+        description: detailedDesc,
+        tags: [...new Set([...tags, ...response.data.objects?.map(o => o.object) || []])],
+        confidence: response.data.description?.captions?.[0]?.confidence,
+        faces,
+        objects: response.data.objects || [],
+        categories
       };
     } catch (error) {
       console.error('[Vision] Error:', error.response?.data || error.message);
@@ -73,10 +98,22 @@ class ApertureDBClient {
   async analyzeVideo(videoPath) {
     console.log('[Vision] Extracting frame from video...');
     const frameBuffer = await this.extractVideoFrame(videoPath);
+    
+    console.log('[Audio] Extracting audio from video...');
+    const audioBuffer = await this.extractVideoAudio(videoPath);
+    
+    let result = { description: 'Video analysis failed', tags: ['video'] };
+    
     if (frameBuffer) {
-      return this.analyzeImage(frameBuffer);
+      result = await this.analyzeImage(frameBuffer);
     }
-    return { description: 'Video analysis failed', tags: ['video'] };
+    
+    // Return both visual analysis and audio buffer for transcription
+    return {
+      ...result,
+      audioBuffer,
+      hasAudio: !!audioBuffer
+    };
   }
 
   async addImage(buffer, metadata) {
@@ -128,6 +165,10 @@ class ApertureDBClient {
         labels: analysis.tags,
         description: analysis.description,
         confidence: analysis.confidence,
+        audioBuffer: analysis.audioBuffer,
+        hasAudio: analysis.hasAudio,
+        faces: analysis.faces,
+        objects: analysis.objects,
         stored_locally: true,
         filepath,
         type: 'video'
