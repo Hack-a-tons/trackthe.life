@@ -56,7 +56,7 @@ class ApertureDBClient {
     }
 
     try {
-      const url = `${this.azureEndpoint}/vision/v3.2/analyze?visualFeatures=Description,Tags,Objects,Faces,Categories,Color,ImageType&details=Celebrities,Landmarks`;
+      const url = `${this.azureEndpoint}/vision/v3.2/analyze?visualFeatures=Description,Tags,Objects,Faces,Categories,Color,ImageType`;
       
       const response = await axios.post(url, buffer, {
         headers: {
