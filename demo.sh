@@ -179,7 +179,7 @@ curl_request() {
 
 # Demo steps
 step_show_samples() {
-  print_step "Available Samples"
+  print_step "Step 2: Available Samples"
   print_info "Opening sample files for preview..."
   echo ""
   
@@ -259,7 +259,7 @@ step_health() {
 }
 
 step_upload_image() {
-  print_step "Step 2: Upload Image from ESP32 Camera"
+  print_step "Step 3: Upload Image from ESP32 Camera"
   
   if [ "$EMULATE_ESP32" = true ]; then
     print_info "Simulating ESP32 camera capture and upload..."
@@ -353,7 +353,7 @@ step_upload_image() {
 }
 
 step_upload_audio() {
-  print_step "Step 3: Video Audio Transcription"
+  print_step "Step 4: Video Audio Transcription"
   print_info "Audio is now automatically extracted from video files..."
   echo ""
   print_info "When you upload a video:"
@@ -367,7 +367,7 @@ step_upload_audio() {
 }
 
 step_query_memories() {
-  print_step "Step 4: Query MemMachine Memories"
+  print_step "Step 5: Query MemMachine Memories"
   print_info "Retrieving stored memories for user..."
   
   print_info "MemMachine stores episodic memories like:"
@@ -382,7 +382,7 @@ step_query_memories() {
 }
 
 step_service_results() {
-  print_step "Step 5: Service Results"
+  print_step "Step 6: Service Results"
   print_info "Querying actual service data..."
   echo ""
   
@@ -433,7 +433,7 @@ except Exception as e:
 }
 
 step_summary() {
-  print_step "Step 6: System Summary"
+  print_step "Step 7: System Summary"
   print_info "trackthe.life Demo Complete!"
   
   echo ""
@@ -481,8 +481,8 @@ EOF
   for step in "${STEPS[@]}"; do
     case $step in
       all)
-        step_show_samples
         step_health
+        step_show_samples
         step_upload_image
         step_upload_audio
         step_query_memories
