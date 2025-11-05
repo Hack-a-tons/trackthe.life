@@ -14,10 +14,10 @@ SessionDB:
 
 Model:
   azure_model:
-    model_vendor: azure
+    model_vendor: openai
     model: ${AZURE_OPENAI_DEPLOYMENT}
     api_key: ${AZURE_OPENAI_API_KEY}
-    api_base: ${AZURE_OPENAI_ENDPOINT}
+    base_url: ${AZURE_OPENAI_ENDPOINT}
     api_version: ${AZURE_OPENAI_API_VERSION}
 
 storage:
@@ -50,11 +50,11 @@ sessionMemory:
 
 embedder:
   azure_embedder:
-    name: azure
+    name: openai
     config:
       model: text-embedding-3-small
       api_key: ${AZURE_OPENAI_API_KEY}
-      api_base: ${AZURE_OPENAI_ENDPOINT}
+      base_url: ${AZURE_OPENAI_ENDPOINT}
       api_version: ${AZURE_OPENAI_API_VERSION}
 
 reranker:
