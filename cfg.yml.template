@@ -50,7 +50,7 @@ sessionMemory:
 
 embedder:
   azure_embedder:
-    name: openai-compatible
+    name: openai
     config:
       model: text-embedding-3-small
       api_key: ${AZURE_OPENAI_API_KEY}
