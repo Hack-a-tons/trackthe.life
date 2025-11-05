@@ -7,6 +7,7 @@ class MemMachineClient {
 
   async addMemory(userId, content, metadata = {}) {
     try {
+      console.log('[MemMachine] Adding memory for user:', userId);
       const response = await axios.post(`${this.url}/v1/memories`, {
         session: {
           group_id: 'trackthelife',
@@ -26,9 +27,10 @@ class MemMachineClient {
         timeout: 5000
       });
       
+      console.log('[MemMachine] Memory stored successfully');
       return { id: `mem_${Date.now()}`, success: true };
     } catch (error) {
-      console.error('MemMachine error:', error.message);
+      console.error('[MemMachine] Error:', error.response?.data || error.message);
       return { id: `mock_mem_${Date.now()}`, success: false };
     }
   }
