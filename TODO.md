@@ -65,10 +65,12 @@ This plan follows the order you specified.
 
 ## 6. Fix ApertureDB
 - [x] Cloud instance down (502 Bad Gateway) - need alternative
-- [x] Decision: Use local file storage with mock detection
-- [x] Implemented local filesystem storage in uploads/ directory
-- [x] Images now stored successfully on each upload
-- [ ] TODO later: Add real object detection (TensorFlow.js or similar)
+- [x] Decision: Replace with Azure Computer Vision
+- [x] Implemented Azure Computer Vision API integration
+- [x] Real image analysis working with descriptions
+- [x] Tested with real photos from ~/Documents/Works/video/
+- [x] Demo shows actual descriptions: "a woman wearing a grey shirt", "a person posing for the camera", "a person holding a skateboard"
+- [x] Tags extracted: human face, person, clothing, smile, etc.
 
 ---
 
