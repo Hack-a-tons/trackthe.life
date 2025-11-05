@@ -52,12 +52,13 @@ This plan follows the order you specified.
 ---
 
 ## 5. Run demo and review actual results (CURRENT - 2025-11-04)
-- [ ] Execute `./demo.sh -v all` to run full workflow
-- [ ] Review ApertureDB results: object detection, image storage, metadata
-- [ ] Review MemMachine context: episodic memories, user profile
-- [ ] Review Telnyx transcription: text output, timestamps
-- [ ] Review Comet stats: traces, metrics, pipeline performance
-- [ ] Document findings and verify all integrations working
+- [x] Execute `./demo.sh -v all` to run full workflow
+- [x] Review ApertureDB results: object detection, image storage, metadata
+- [x] Review MemMachine context: episodic memories, user profile
+- [x] Review Telnyx transcription: text output, timestamps
+- [x] Review Comet stats: traces, metrics, pipeline performance
+- [x] Document findings and verify all integrations working
+- [x] Fix Telnyx/Whisper: Switched to Azure OpenAI Whisper (working)
 
 ---
 

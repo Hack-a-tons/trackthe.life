@@ -284,8 +284,40 @@ step_query_memories() {
   pause_step
 }
 
+step_service_results() {
+  print_step "Step 5: Service Results"
+  print_info "Querying actual service data..."
+  echo ""
+  
+  # Query MemMachine for stored memories
+  echo -e "${YELLOW}📝 MemMachine Memories (last 3):${NC}"
+  if command -v ssh &> /dev/null && [[ "$BACKEND_URL" == *"hurated.com"* ]]; then
+    ssh trackthelife.hurated.com 'curl -s -X POST http://localhost:7000/v1/memories/search \
+      -H "Content-Type: application/json" \
+      -d "{\"session\":{\"group_id\":\"trackthelife\",\"user_id\":[\"demo-user\"]},\"query\":\"recent\",\"limit\":3}"' 2>/dev/null | \
+      python3 -c "import sys,json; d=json.load(sys.stdin); [print(f'  • {m[\"content\"][:80]}...') for m in d.get('content',{}).get('episodic_memory',[[],[]])[1][:3]]" 2>/dev/null || \
+      echo "  ℹ️  See DEMO_RESULTS.md for MemMachine query examples"
+  else
+    echo "  ℹ️  Local backend - query http://localhost:7000/v1/memories/search"
+  fi
+  echo ""
+  
+  # Show backend service logs
+  echo -e "${YELLOW}📊 Backend Service Logs (last 10 lines):${NC}"
+  if command -v ssh &> /dev/null && [[ "$BACKEND_URL" == *"hurated.com"* ]]; then
+    ssh trackthelife.hurated.com 'docker logs trackthelife-backend --tail 10 2>&1 | grep -E "\[Whisper\]|\[Comet\]|ApertureDB"' 2>/dev/null || \
+      echo "  ℹ️  Unable to fetch remote logs"
+  else
+    echo "  ℹ️  Local backend - check: docker logs trackthelife-backend"
+  fi
+  echo ""
+  
+  print_success "Service results displayed"
+  pause_step
+}
+
 step_summary() {
-  print_step "Step 5: System Summary"
+  print_step "Step 6: System Summary"
   print_info "trackthe.life Demo Complete!"
   
   echo ""
@@ -337,6 +369,7 @@ EOF
         step_upload_image
         step_upload_audio
         step_query_memories
+        step_service_results
         step_summary
         ;;
       health)
