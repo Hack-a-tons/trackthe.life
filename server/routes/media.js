@@ -59,7 +59,9 @@ router.post('/media', upload.single('file'), async (req, res) => {
     res.json({
       status: 'ok',
       media_id: apertureResult.id,
+      description: apertureResult.description,
       labels: apertureResult.labels || [],
+      confidence: apertureResult.confidence,
       location: location || (ipLocation ? `${ipLocation.lat},${ipLocation.lon}` : null),
       ipLocation: ipLocation ? {
         city: ipLocation.city,

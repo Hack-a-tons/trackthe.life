@@ -188,11 +188,11 @@ step_upload_image() {
       mkdir -p captures
       print_info "Using real sample photo..."
       
-      # Use real sample photos instead of generating test images
+      # Use real sample photos from captures directory
       SAMPLE_PHOTOS=(
-        "$HOME/Documents/Works/video/2025.11.03/alisa_future_girl.png"
-        "$HOME/Documents/Works/video/2025.11.03/kolya_1980s_boy.png"
-        "$HOME/Documents/Works/video/2025.10.06/Sora/first_frame.jpg"
+        "captures/sample1.jpg"
+        "captures/sample2.jpg"
+        "captures/sample3.jpg"
       )
       
       # Pick a random sample photo
@@ -201,14 +201,32 @@ step_upload_image() {
       
       if [ -f "$SAMPLE_PHOTO" ]; then
         cp "$SAMPLE_PHOTO" captures/test.jpg
-        print_verbose "Copied: $(basename "$SAMPLE_PHOTO")"
+        print_verbose "Using: $(basename "$SAMPLE_PHOTO")"
       else
-        # Fallback to simple test image
-        print_info "Sample photos not found, creating test image..."
-        if command -v convert &> /dev/null; then
-          convert -size 100x100 xc:blue captures/test.jpg 2>/dev/null || echo "Test" > captures/test.jpg
-        else
-          echo "Test image data" > captures/test.jpg
+        # Fallback: try to find any sample in Documents
+        ALT_SAMPLES=(
+          "$HOME/Documents/Works/video/2025.11.03/alisa_future_girl.png"
+          "$HOME/Documents/Works/video/2025.11.03/kolya_1980s_boy.png"
+          "$HOME/Documents/Works/video/2025.10.06/Sora/first_frame.jpg"
+        )
+        FOUND=false
+        for alt in "${ALT_SAMPLES[@]}"; do
+          if [ -f "$alt" ]; then
+            cp "$alt" captures/test.jpg
+            print_verbose "Using: $(basename "$alt")"
+            FOUND=true
+            break
+          fi
+        done
+        
+        if [ "$FOUND" = false ]; then
+          # Final fallback to simple test image
+          print_info "Sample photos not found, creating test image..."
+          if command -v convert &> /dev/null; then
+            convert -size 100x100 xc:blue captures/test.jpg 2>/dev/null || echo "Test" > captures/test.jpg
+          else
+            echo "Test image data" > captures/test.jpg
+          fi
         fi
       fi
     fi
@@ -244,8 +262,12 @@ step_upload_image() {
     print_success "Image uploaded successfully!"
     media_id=$(echo "$response" | grep -o '"media_id":"[^"]*"' | cut -d'"' -f4)
     echo "  Media ID: $media_id"
+    description=$(echo "$response" | grep -o '"description":"[^"]*"' | cut -d'"' -f4)
+    if [ -n "$description" ]; then
+      echo "  Description: $description"
+    fi
     labels=$(echo "$response" | grep -o '"labels":\[[^]]*\]')
-    echo "  Detected: $labels"
+    echo "  Tags: $labels"
   else
     print_error "Image upload failed"
   fi
